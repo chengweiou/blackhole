@@ -11,6 +11,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Builder {
+    /**
+     * 1. create a new Entity with properties
+     *  Builder.set(property, value).set(property, value).to(new Entity() || Entity.class)
+     * 2. add properties to exists entity:
+     *  Builder.set(property, value).set(property, value).to(entity)
+     * 3. just return new obj or do not thing
+     *  Builder.to(new Entity || Entity.class)
+     *  Builder.to(entity)
+     * @param k
+     * @param v
+     * @return
+     */
     public static Store set(String k, Object v) {
         return new Store(k, v);
     }

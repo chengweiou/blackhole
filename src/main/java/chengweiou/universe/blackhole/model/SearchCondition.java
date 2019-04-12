@@ -5,13 +5,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SearchCondition {
+    /**
+     * WHERE("name LIKE #{searchCondition.like.k}");
+     * WHERE("name LIKE #{searchCondition.full.like.k}");
+     */
     private String k;
     private String minDate;
     private String maxDate;
+    /**
+     * new SQL{{}}.toString().concat(searchCondition.getOrderBy()).concat(searchCondition.getSqlLimit());
+     */
     private int skip;
+    /**
+     * 0 will make it unlimited
+     *  limit 3, 10 || offset 3 (when limit 0)
+     */
     private int limit = 10;
+    /**
+     * suggest for frontend use
+     */
     private String sort;
     private boolean sortAz;
+    /**
+     * suggest for backend use
+     */
     private String defaultSort;
     private boolean defaultSortAz;
 
