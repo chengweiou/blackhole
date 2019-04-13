@@ -1,14 +1,23 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'maven-publish'
 }
 
-group = 'chengweiou,universe'
-version = '0.0.1-SNAPSHOT'
+group = 'chengweiou.universe'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'http://127.0.0.1:8001/repository/chengweiou/'
+        credentials {
+            username 'admin'
+            password 'admin123'
+        }
+    }
+
 }
 
 dependencies {
@@ -22,5 +31,22 @@ test {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url 'http://127.0.0.1:8001/repository/chengweiou/'
+            credentials {
+                username = 'admin'
+                password = 'admin123'
+            }
+        }
     }
 }
