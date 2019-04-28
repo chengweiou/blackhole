@@ -1,4 +1,4 @@
-package chengweiou.universe.blackhole.model.entity;
+package chengweiou.universe.blackhole.model.test;
 
 public class BuilderEntity {
     private String stringType;

@@ -1,4 +1,4 @@
-package chengweiou.universe.blackhole.model.entity;
+package chengweiou.universe.blackhole.model.test;
 
 import chengweiou.universe.blackhole.model.NotNullObj;
 import chengweiou.universe.blackhole.model.NullObj;

@@ -1,7 +1,7 @@
 package chengweiou.universe.blackhole.model;
 
 
-import chengweiou.universe.blackhole.model.entity.NotNullObjEntity;
+import chengweiou.universe.blackhole.model.test.NotNullObjEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

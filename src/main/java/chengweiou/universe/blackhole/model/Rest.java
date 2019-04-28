@@ -33,7 +33,7 @@ public class Rest<T> implements Serializable {
 
     }
     public static <T> Rest<T> from(String from, Class c) {
-        Gson gson = createGson();
+        Gson gson = !RestCode.class.isAssignableFrom(c) ? createGson() : createGson(c);
         Type type = createType(Rest.class, c);
         return gson.fromJson(from,  type);
     }
@@ -58,12 +58,16 @@ public class Rest<T> implements Serializable {
     }
 
     private static Gson createGson() {
+        return createGson(BasicRestCode.class);
+    }
+    private static Gson createGson(Class c) {
         return new GsonBuilder()
-                .registerTypeAdapter(RestCode.class, (JsonDeserializer<BasicRestCode>) (json, typeOfT, context) -> BasicRestCode.valueOf(json.getAsString()))
+                .registerTypeHierarchyAdapter(RestCode.class, (JsonDeserializer<?>) (json, typeOfT, context) -> Enum.valueOf(c, json.getAsString()))
                 .registerTypeAdapter(LocalDate.class, (JsonDeserializer) (json, typeOfT, context) -> LocalDate.parse(json.getAsJsonPrimitive().getAsString()))
                 .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer) (json, typeOfT, context) -> LocalDateTime.parse(json.getAsJsonPrimitive().getAsString()))
                 .create();
     }
+
     public RestCode getCode() {
         return code;
     }
