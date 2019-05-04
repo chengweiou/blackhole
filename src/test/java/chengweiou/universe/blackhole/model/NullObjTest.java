@@ -10,11 +10,11 @@ public class NullObjTest {
     @Test
     public void newInstance() {
         NotNullObjEntity notNullObjEntity = Builder.to(new NotNullObjEntity());
-        Assertions.assertEquals(true, !notNullObjEntity.isNull());
+        Assertions.assertEquals(true, notNullObjEntity.isNotNull());
 
         NotNullObjEntity nullObjEntity = NotNullObjEntity.NULL;
-        Assertions.assertEquals(true, nullObjEntity.isNull());
-        Assertions.assertEquals(true, nullObjEntity.getObj().isNull());
+        Assertions.assertEquals(true, !nullObjEntity.isNotNull());
+        Assertions.assertEquals(true, !nullObjEntity.getObj().isNotNull());
     }
 
 }
