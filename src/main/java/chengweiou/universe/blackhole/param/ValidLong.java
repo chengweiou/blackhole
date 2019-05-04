@@ -14,9 +14,9 @@ public class ValidLong {
             this.v = v;
         }
         public ValidLong is() throws ParamException {
-            return isNotEmpty();
+            return isNotNull();
         }
-        public ValidLong isNotEmpty() throws ParamException {
+        public ValidLong isNotNull() throws ParamException {
             if (this.v == null) throw new ParamException(this.k + ": null, " + "can not be null");
             return new ValidLong(this.k, this.v);
         }

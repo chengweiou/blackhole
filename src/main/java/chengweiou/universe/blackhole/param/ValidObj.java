@@ -17,9 +17,9 @@ public class ValidObj {
             this.v = v;
         }
         public ValidObj is() throws ParamException {
-            return isNotEmpty();
+            return isNotNull();
         }
-        public ValidObj isNotEmpty() throws ParamException {
+        public ValidObj isNotNull() throws ParamException {
             if (this.v == null) throw new ParamException(this.k + ": null, " + "can not be null");
             return new ValidObj(this.k, this.v);
         }

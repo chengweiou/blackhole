@@ -14,9 +14,9 @@ public class ValidDouble {
             this.v = v;
         }
         public ValidDouble is() throws ParamException {
-            return isNotEmpty();
+            return isNotNull();
         }
-        public ValidDouble isNotEmpty() throws ParamException {
+        public ValidDouble isNotNull() throws ParamException {
             if (this.v == null) throw new ParamException(this.k + ": null, " + "can not be null");
             return new ValidDouble(this.k, this.v);
         }

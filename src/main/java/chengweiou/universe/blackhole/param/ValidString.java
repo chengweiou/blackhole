@@ -17,9 +17,9 @@ public class ValidString {
             this.v = v;
         }
         public ValidString is() throws ParamException {
-            return isNotEmpty();
+            return isNotNull();
         }
-        public ValidString isNotEmpty() throws ParamException {
+        public ValidString isNotNull() throws ParamException {
             if (this.v == null) throw new ParamException(this.k + ": null, " + "can not be null");
             return new ValidString(this.k, this.v);
         }
@@ -30,6 +30,10 @@ public class ValidString {
         this.showV = this.v != null ?
                 this.v.length() > 20 ? StringUtil.hidMid(this.v) : this.v :
                 "null";
+    }
+    public ValidString notEmpty() throws ParamException {
+        if (this.v.isBlank()) throw new ParamException(this.k + ": " + this.showV + ", must not empty");
+        return this;
     }
     public ValidString lengthIn(int a) throws ParamException {
         if (this.v.length() > a) throw new ParamException(this.k + ": " + this.showV + ", length must <= " + a);

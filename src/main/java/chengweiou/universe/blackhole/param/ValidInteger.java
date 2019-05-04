@@ -14,9 +14,9 @@ public class ValidInteger {
             this.v = v;
         }
         public ValidInteger is() throws ParamException {
-            return isNotEmpty();
+            return isNotNull();
         }
-        public ValidInteger isNotEmpty() throws ParamException {
+        public ValidInteger isNotNull() throws ParamException {
             if (this.v == null) throw new ParamException(this.k + ": null, " + "can not be null");
             return new ValidInteger(this.k, this.v);
         }
