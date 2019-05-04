@@ -30,3 +30,6 @@ HELP.md
 
 ### VS Code ###
 .vscode/
+
+### System ###
+.DS_Store
