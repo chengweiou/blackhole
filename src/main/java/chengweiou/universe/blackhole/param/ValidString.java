@@ -58,7 +58,7 @@ public class ValidString {
         return this;
     }
     public ValidString notOf(String ...list) throws ParamException {
-        return of(Arrays.asList(list));
+        return notOf(Arrays.asList(list));
     }
     public ValidString notOf(List<String> list) throws ParamException {
         if (list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must not be one of " + list);
