@@ -55,4 +55,9 @@ public class BuilderTest {
         BuilderEntity e = Builder.set("intSmallType", 8).to(BuilderEntity.class);
         Assertions.assertEquals(8, e.getIntSmallType());
     }
+
+    @Test
+    public void setWrongName() {
+        Assertions.assertThrows(NullPointerException.class, () -> Builder.set("wrongname", 8).to(BuilderEntity.class));
+    }
 }
