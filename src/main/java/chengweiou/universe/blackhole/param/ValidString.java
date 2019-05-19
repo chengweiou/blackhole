@@ -41,9 +41,13 @@ public class ValidString {
         return this;
     }
     public ValidString lengthIn(int a, int b) throws ParamException {
-        int min = Math.min(a, b);
-        int max = Math.max(a, b);
-        if (this.v.length() < min || this.v.length() > max) throw new ParamException(this.k + ": " + this.showV + ", length must " + min + " <= " + this.showV + " <= " + max);
+        if (b < 0) {
+            if (this.v.length() < a) throw new ParamException(this.k + ": " + this.showV + ", length must " + this.showV + " <= " + a);
+        } else {
+            int min = Math.min(a, b);
+            int max = Math.max(a, b);
+            if (this.v.length() < min || this.v.length() > max) throw new ParamException(this.k + ": " + this.showV + ", length must " + min + " <= " + this.showV + " <= " + max);
+        }
         return this;
     }
     public ValidString lengthIs(int a) throws ParamException {
