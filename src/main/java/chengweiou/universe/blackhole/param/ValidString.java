@@ -3,6 +3,7 @@ package chengweiou.universe.blackhole.param;
 import chengweiou.universe.blackhole.exception.ParamException;
 import chengweiou.universe.blackhole.util.StringUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ValidString {
@@ -49,13 +50,25 @@ public class ValidString {
         if (this.v.length() != a) throw new ParamException(this.k + ": " + this.showV + ", length must be " + a);
         return this;
     }
-    // todo it may be null in this situaction
+    public ValidString of(String ...list) throws ParamException {
+        return of(Arrays.asList(list));
+    }
     public ValidString of(List<String> list) throws ParamException {
-        if (list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must be one of " + list);
+        if (!list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must be one of " + list);
         return this;
     }
+    public ValidString notOf(String ...list) throws ParamException {
+        return of(Arrays.asList(list));
+    }
+    public ValidString notOf(List<String> list) throws ParamException {
+        if (list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must not be one of " + list);
+        return this;
+    }
+    public ValidString include(String ...list) throws ParamException {
+        return include(Arrays.asList(list));
+    }
     public ValidString include(List<String> list) throws ParamException {
-        if (list.stream().anyMatch(e -> !this.v.contains("a"))) throw new ParamException(this.k + ": " + this.showV + ", must be include all of " + list);
+        if (list.stream().anyMatch(e -> !this.v.contains("a"))) throw new ParamException(this.k + ": " + this.showV + ", must include all of " + list);
         return this;
     }
 }

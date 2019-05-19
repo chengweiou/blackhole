@@ -2,6 +2,9 @@ package chengweiou.universe.blackhole.param;
 
 import chengweiou.universe.blackhole.exception.ParamException;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ValidDouble {
     private String k;
     private Double v;
@@ -42,6 +45,13 @@ public class ValidDouble {
         double min = Math.min(a, b);
         double max = Math.max(a, b);
         if (this.v < min || this.v > max) throw new ParamException(this.k + ": " + this.showV + ", must " + min + " <= " + this.showV + " <= " + max);
+        return this;
+    }
+    public ValidDouble notOf(Integer ...list) throws ParamException {
+        return notOf(Arrays.asList(list));
+    }
+    public ValidDouble notOf(List<Integer> list) throws ParamException {
+        if (!list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must not be one of " + list);
         return this;
     }
 }
