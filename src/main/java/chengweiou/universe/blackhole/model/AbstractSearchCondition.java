@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SearchCondition {
+public abstract class AbstractSearchCondition {
     /**
      * WHERE("name LIKE #{searchCondition.like.k}");
      * WHERE("name LIKE #{searchCondition.full.like.k}");
