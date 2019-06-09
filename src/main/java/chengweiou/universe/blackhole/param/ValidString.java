@@ -3,6 +3,9 @@ package chengweiou.universe.blackhole.param;
 import chengweiou.universe.blackhole.exception.ParamException;
 import chengweiou.universe.blackhole.util.StringUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +13,7 @@ public class ValidString {
     private String k;
     private String v;
     private String showV;
+
     public static class Nullable {
         private String k;
         private String v;
@@ -74,5 +78,36 @@ public class ValidString {
     public ValidString include(List<String> list) throws ParamException {
         if (list.stream().anyMatch(e -> !this.v.contains("a"))) throw new ParamException(this.k + ": " + this.showV + ", must include all of " + list);
         return this;
+    }
+
+    public ValidString date() throws ParamException {
+        try {
+            LocalDate.parse(this.v);
+            return this;
+        } catch (DateTimeParseException e) {
+            throw new ParamException(this.k + ": " + this.showV + ", must not be format of date: yyyy-MM-dd");
+        }
+    }
+    public ValidString time() throws ParamException {
+        try {
+            LocalDateTime.parse(this.v);
+            return this;
+        } catch (DateTimeParseException e) {
+            throw new ParamException(this.k + ": " + this.showV + ", must not be format of datetime: yyyy-MM-ddTHH:mm:ss");
+        }
+    }
+    public ValidString dateOrTime() throws ParamException {
+        try {
+            LocalDate.parse(this.v);
+            return this;
+        } catch (DateTimeParseException e1) {
+            try {
+                LocalDateTime.parse(this.v);
+                return this;
+            } catch (DateTimeParseException e2) {
+                throw new ParamException(this.k + ": " + this.showV + ", must not be format of date or datetime: yyyy-MM-dd | yyyy-MM-ddTHH:mm:ss");
+            }
+        }
+
     }
 }

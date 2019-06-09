@@ -33,7 +33,7 @@ public class ValidObj {
     }
     // todo it may be null in this situaction
     public ValidObj of(List<String> list) throws ParamException {
-        if (list.contains(this.v.toString())) throw new ParamException(this.k + ": " + this.showV + ", must be one of " + list);
+        if (!list.contains(this.v.toString())) throw new ParamException(this.k + ": " + this.showV + ", must be one of " + list);
         return this;
     }
 }
