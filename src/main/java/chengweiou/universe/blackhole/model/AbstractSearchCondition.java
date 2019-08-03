@@ -34,6 +34,7 @@ public abstract class AbstractSearchCondition {
 
     private Full full;
     private Like like;
+    private Reg reg;
 
     public String getSqlLimit() {
         return " limit " + skip + ", " + limit + " ";
@@ -47,26 +48,42 @@ public abstract class AbstractSearchCondition {
 
     // todo 别名 配置器
     public Full getFull() {
-        if (full == null) full = new Full(new Like("%" + k + "%"));
+        if (full == null) full = new Full(k);
         return full;
     }
     public static class Full {
+        private String k;
         private Like like;
-        Full(Like like) {
-            this.like = like;
+        private Reg reg;
+        Full(String k) { this.k = k; }
+        public Like getLike() {
+            if (like == null) like = new Like("%" + k);
+            return like;
         }
-        public Like getLike() { return like; }
-    }
-    public Like getLike() {
-        if (like == null) like = new Like(k + "%");
-        return like;
+        public Reg getReg() {
+            if (reg == null) reg = new Reg(".*" + k);
+            return reg;
+        }
     }
     public static class Like {
         private String k;
         Like(String k) { this.k = k; }
-        public String getK() { return this.k; }
+        public String getK() { return this.k + "%"; }
+    }
+    public static class Reg {
+        private String k;
+        Reg(String k) { this.k = k; }
+        public String getK() { return "^" + this.k + ".*$"; }
     }
 
+    public Like getLike() {
+        if (like == null) like = new Like(k);
+        return like;
+    }
+    public Reg getReg() {
+        if (reg == null) reg = new Reg(k);
+        return reg;
+    }
     @Override
     public String toString() {
         return "SearchCondition{" +
