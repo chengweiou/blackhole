@@ -15,6 +15,8 @@ public class SearchConditionTest {
         Assertions.assertEquals("%abc%", searchCondition.getFull().getLike().getK());
         Assertions.assertEquals("^abc.*$", searchCondition.getReg().getK());
         Assertions.assertEquals("^.*abc.*$", searchCondition.getFull().getReg().getK());
+        Assertions.assertEquals("^abc.*$", searchCondition.getReg().getPattern().pattern());
+        Assertions.assertEquals("^.*abc.*$", searchCondition.getFull().getReg().getPattern().pattern());
     }
 
     @Test

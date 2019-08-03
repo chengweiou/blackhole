@@ -2,6 +2,7 @@ package chengweiou.universe.blackhole.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class AbstractSearchCondition {
@@ -74,6 +75,7 @@ public abstract class AbstractSearchCondition {
         private String k;
         Reg(String k) { this.k = k; }
         public String getK() { return "^" + this.k + ".*$"; }
+        public Pattern getPattern() { return Pattern.compile("^" + this.k + ".*$", Pattern.CASE_INSENSITIVE); }
     }
 
     public Like getLike() {
