@@ -48,5 +48,13 @@ public class ValidStringTest {
             Valid.check("dateOrTime", "asdf").is().dateOrTime();
         });
     }
-
+    @Test
+    public void objectId() throws ParamException {
+        Valid.check("objectId", "5d44e0ee661d746770a17807").is().objectId();
+        Assertions.assertThrows(ParamException.class, () -> {
+            Valid.check("objectId", "0044e0ee6610746770a17807").is().objectId();
+            Valid.check("objectId", "0").is().objectId();
+            Valid.check("objectId", "5d44e0ee661d746770a17807asdfdsaf").is().objectId();
+        });
+    }
 }

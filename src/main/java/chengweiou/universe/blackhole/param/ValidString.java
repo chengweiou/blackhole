@@ -110,4 +110,15 @@ public class ValidString {
         }
 
     }
+    public void objectId() throws ParamException {
+        int len = this.v.length();
+        if (len != 24) throw new ParamException(this.k + ": " + this.showV + ", must not be objectId");
+        for (int i = 0; i < len; i++) {
+            char c = this.v.charAt(i);
+            if (c >= '0' && c <= '9') continue;
+            if (c >= 'a' && c <= 'f') continue;
+            if (c >= 'A' && c <= 'F') continue;
+            throw new ParamException(this.k + ": " + this.showV + ", must not be objectId");
+        }
+    }
 }
