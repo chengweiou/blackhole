@@ -85,7 +85,7 @@ public class ValidString {
             LocalDate.parse(this.v);
             return this;
         } catch (DateTimeParseException e) {
-            throw new ParamException(this.k + ": " + this.showV + ", must not be format of date: yyyy-MM-dd");
+            throw new ParamException(this.k + ": " + this.showV + ", must be format of date: yyyy-MM-dd");
         }
     }
     public ValidString time() throws ParamException {
@@ -93,7 +93,7 @@ public class ValidString {
             LocalDateTime.parse(this.v);
             return this;
         } catch (DateTimeParseException e) {
-            throw new ParamException(this.k + ": " + this.showV + ", must not be format of datetime: yyyy-MM-ddTHH:mm:ss");
+            throw new ParamException(this.k + ": " + this.showV + ", must be format of datetime: yyyy-MM-ddTHH:mm:ss");
         }
     }
     public ValidString dateOrTime() throws ParamException {
@@ -105,20 +105,20 @@ public class ValidString {
                 LocalDateTime.parse(this.v);
                 return this;
             } catch (DateTimeParseException e2) {
-                throw new ParamException(this.k + ": " + this.showV + ", must not be format of date or datetime: yyyy-MM-dd | yyyy-MM-ddTHH:mm:ss");
+                throw new ParamException(this.k + ": " + this.showV + ", must be format of date or datetime: yyyy-MM-dd | yyyy-MM-ddTHH:mm:ss");
             }
         }
 
     }
     public void objectId() throws ParamException {
         int len = this.v.length();
-        if (len != 24) throw new ParamException(this.k + ": " + this.showV + ", must not be objectId");
+        if (len != 24) throw new ParamException(this.k + ": " + this.showV + ", must be objectId");
         for (int i = 0; i < len; i++) {
             char c = this.v.charAt(i);
             if (c >= '0' && c <= '9') continue;
             if (c >= 'a' && c <= 'f') continue;
             if (c >= 'A' && c <= 'F') continue;
-            throw new ParamException(this.k + ": " + this.showV + ", must not be objectId");
+            throw new ParamException(this.k + ": " + this.showV + ", must be objectId");
         }
     }
 }
