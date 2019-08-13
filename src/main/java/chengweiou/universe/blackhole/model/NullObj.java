@@ -1,7 +1,7 @@
 package chengweiou.universe.blackhole.model;
 
 public interface NullObj extends NotNullObj {
-    default boolean isNotNull() {
+    default boolean notNull() {
         return false;
     }
 }
