@@ -38,6 +38,7 @@ public abstract class AbstractSearchCondition {
     private Reg reg;
 
     public String getSqlLimit() {
+        if (limit == 0) return "";
         return " limit " + skip + ", " + limit + " ";
     }
     public String getOrderBy() {
