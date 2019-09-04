@@ -5,6 +5,8 @@ import chengweiou.universe.blackhole.model.test.TestSearchCondition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 public class SearchConditionTest {
 
     @Test
@@ -17,6 +19,16 @@ public class SearchConditionTest {
         Assertions.assertEquals("^.*abc.*$", searchCondition.getFull().getReg().getK());
         Assertions.assertEquals("^abc.*$", searchCondition.getReg().getPattern().pattern());
         Assertions.assertEquals("^.*abc.*$", searchCondition.getFull().getReg().getPattern().pattern());
+    }
+
+    @Test
+    public void getIdList() {
+        TestSearchCondition searchCondition = new TestSearchCondition();
+        Assertions.assertEquals("('0')", searchCondition.getForeachIdList());
+        searchCondition = Builder.set("idList", Arrays.asList("3", "7")).to(new TestSearchCondition());
+        Assertions.assertEquals("('3','7')", searchCondition.getForeachIdList());
+        searchCondition = Builder.set("idList", Arrays.asList("'3'", "'7'")).to(new TestSearchCondition());
+        Assertions.assertEquals("('3','7')", searchCondition.getForeachIdList());
     }
 
     @Test

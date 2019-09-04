@@ -14,6 +14,10 @@ public abstract class AbstractSearchCondition {
     private String minDate;
     private String maxDate;
     /**
+     * if (searchCondition.getIdList() != null) WHERE("id in ${searchCondition.foreachIdList}");
+     */
+    private List<String> idList = new ArrayList<>();
+    /**
      * new SQL{{}}.toString().concat(searchCondition.getOrderBy()).concat(searchCondition.getSqlLimit());
      */
     private int skip;
@@ -37,6 +41,11 @@ public abstract class AbstractSearchCondition {
     private Like like;
     private Reg reg;
 
+    public String getForeachIdList() {
+        if (idList.isEmpty()) return "('0')";
+        idList = idList.parallelStream().map(e -> e.replaceAll("'", "").replaceAll("\"", "")).distinct().collect(Collectors.toList());
+        return "(" + idList.parallelStream().map(e -> "'" + e + "'").collect(Collectors.joining(",")) + ")";
+    }
     public String getSqlLimit() {
         if (limit == 0) return "";
         return " limit " + skip + ", " + limit + " ";
@@ -110,6 +119,14 @@ public abstract class AbstractSearchCondition {
 
     public void setK(String k) {
         this.k = k;
+    }
+
+    public List<String> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<String> idList) {
+        this.idList = idList;
     }
 
     public String getMinDate() {
