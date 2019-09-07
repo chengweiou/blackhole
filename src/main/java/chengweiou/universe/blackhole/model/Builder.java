@@ -62,7 +62,7 @@ public class Builder {
                 result = (T) c.getConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 LogUtil.e("builder set property fail! " + c + " needs a no param constructor", e);
-                throw new NullPointerException();
+                throw new NullPointerException("builder set property fail! \" + c + \" needs a no param constructor");
             }
             setProp(c, result);
             return result;
