@@ -4,6 +4,8 @@ import chengweiou.universe.blackhole.util.LogUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -92,8 +94,17 @@ public class Builder {
                 } catch (IllegalAccessException | InvocationTargetException ex) {
                     LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
                 } catch (IllegalArgumentException ex) {
+                    Object obj;
                     try {
-                        Object obj = methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());
+                        switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
+                            case "java.time.LocalDate":
+                                obj = LocalDate.parse(e.getValue().toString()); break;
+                            case "java.time.LocalDateTime":
+                                obj = LocalDateTime.parse(e.getValue().toString()); break;
+                            default:
+                                obj = methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());
+                                break;
+                        }
                         methodMap.get(methodName).invoke(instance, obj);
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
                         LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");

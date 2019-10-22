@@ -1,5 +1,7 @@
 package chengweiou.universe.blackhole.model.test;
 
+import java.time.LocalDate;
+
 public class BuilderEntity {
     private String stringType;
     private Integer integerType;
@@ -9,7 +11,8 @@ public class BuilderEntity {
     private Boolean booleanType;
     private boolean booleanSmallType;
     private int intSmallType;
-
+    private LocalDate localDateType;
+    private LocalDate localDateTimeType;
 
     public Boolean getBooleanType() {
         return booleanType;
@@ -30,7 +33,25 @@ public class BuilderEntity {
                 ", booleanType=" + booleanType +
                 ", booleanSmallType=" + booleanSmallType +
                 ", intSmallType=" + intSmallType +
+                ", localDateType=" + localDateType +
+                ", localDateTimeType=" + localDateTimeType +
                 '}';
+    }
+
+    public LocalDate getLocalDateType() {
+        return localDateType;
+    }
+
+    public void setLocalDateType(LocalDate localDateType) {
+        this.localDateType = localDateType;
+    }
+
+    public LocalDate getLocalDateTimeType() {
+        return localDateTimeType;
+    }
+
+    public void setLocalDateTimeType(LocalDate localDateTimeType) {
+        this.localDateTimeType = localDateTimeType;
     }
 
     public int getIntSmallType() {
