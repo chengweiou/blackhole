@@ -5,6 +5,9 @@ import chengweiou.universe.blackhole.model.test.BuilderEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 public class BuilderTest {
 
@@ -48,6 +51,17 @@ public class BuilderTest {
     public void setBooleanSmallType() {
         BuilderEntity e = Builder.set("booleanSmallType", true).to(BuilderEntity.class);
         Assertions.assertEquals(true, e.isBooleanSmallType());
+    }
+
+    @Test
+    public void dateToString() {
+        BuilderEntity e = Builder.set("stringType", LocalDate.of(2019, 01, 01)).to(BuilderEntity.class);
+        Assertions.assertEquals("2019-01-01", e.getStringType());
+    }
+    @Test
+    public void DatetimeToString() {
+        BuilderEntity e = Builder.set("stringType", LocalDateTime.of(2019, 01, 01, 0, 0, 0)).to(BuilderEntity.class);
+        Assertions.assertEquals("2019-01-01T00:00:00", e.getStringType());
     }
 
     @Test

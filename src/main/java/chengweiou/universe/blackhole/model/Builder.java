@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +98,11 @@ public class Builder {
                     Object obj;
                     try {
                         switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
+                            case "java.lang.String":
+                                if (e.getValue() instanceof LocalDateTime) {
+                                    obj = ((LocalDateTime) e.getValue()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); break;
+                                }
+                                obj = e.getValue().toString(); break;
                             case "java.time.LocalDate":
                                 obj = LocalDate.parse(e.getValue().toString()); break;
                             case "java.time.LocalDateTime":
