@@ -13,6 +13,7 @@ public class ValidString {
     private String k;
     private String v;
     private String showV;
+    private boolean pass;
 
     public static class Nullable {
         private String k;
@@ -28,6 +29,10 @@ public class ValidString {
             if (this.v == null) throw new ParamException(this.k + ": null, " + "can not be null");
             return new ValidString(this.k, this.v);
         }
+        public ValidString nullable() {
+            if (this.v == null) return new ValidString(true);
+            return new ValidString(this.k, this.v);
+        }
     }
     public ValidString(String k, String v) {
         this.k = k;
@@ -35,16 +40,23 @@ public class ValidString {
         this.showV = this.v != null ?
                 this.v.length() > 20 ? StringUtil.hidMid(this.v) : this.v :
                 "null";
+        this.pass = false;
+    }
+    public ValidString(boolean pass) {
+        this.pass = pass;
     }
     public ValidString notEmpty() throws ParamException {
+        if (this.pass) return this;
         if (this.v.isBlank()) throw new ParamException(this.k + ": " + this.showV + ", must not empty");
         return this;
     }
     public ValidString lengthIn(int a) throws ParamException {
+        if (this.pass) return this;
         if (this.v.length() > a) throw new ParamException(this.k + ": " + this.showV + ", length must <= " + a);
         return this;
     }
     public ValidString lengthIn(int a, int b) throws ParamException {
+        if (this.pass) return this;
         if (b < 0) {
             if (this.v.length() < a) throw new ParamException(this.k + ": " + this.showV + ", length must " + this.showV + " <= " + a);
         } else {
@@ -55,32 +67,40 @@ public class ValidString {
         return this;
     }
     public ValidString lengthIs(int a) throws ParamException {
+        if (this.pass) return this;
         if (this.v.length() != a) throw new ParamException(this.k + ": " + this.showV + ", length must be " + a);
         return this;
     }
     public ValidString of(String ...list) throws ParamException {
+        if (this.pass) return this;
         return of(Arrays.asList(list));
     }
     public ValidString of(List<String> list) throws ParamException {
+        if (this.pass) return this;
         if (!list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must be one of " + list);
         return this;
     }
     public ValidString notOf(String ...list) throws ParamException {
+        if (this.pass) return this;
         return notOf(Arrays.asList(list));
     }
     public ValidString notOf(List<String> list) throws ParamException {
+        if (this.pass) return this;
         if (list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must not be one of " + list);
         return this;
     }
     public ValidString include(String ...list) throws ParamException {
+        if (this.pass) return this;
         return include(Arrays.asList(list));
     }
     public ValidString include(List<String> list) throws ParamException {
+        if (this.pass) return this;
         if (list.stream().anyMatch(e -> !this.v.contains("a"))) throw new ParamException(this.k + ": " + this.showV + ", must include all of " + list);
         return this;
     }
 
     public ValidString date() throws ParamException {
+        if (this.pass) return this;
         try {
             LocalDate.parse(this.v);
             return this;
@@ -89,6 +109,7 @@ public class ValidString {
         }
     }
     public ValidString time() throws ParamException {
+        if (this.pass) return this;
         try {
             LocalDateTime.parse(this.v);
             return this;
@@ -97,6 +118,7 @@ public class ValidString {
         }
     }
     public ValidString dateOrTime() throws ParamException {
+        if (this.pass) return this;
         try {
             LocalDate.parse(this.v);
             return this;
@@ -110,7 +132,8 @@ public class ValidString {
         }
 
     }
-    public void objectId() throws ParamException {
+    public ValidString objectId() throws ParamException {
+        if (this.pass) return this;
         int len = this.v.length();
         if (len != 24) throw new ParamException(this.k + ": " + this.showV + ", must be objectId");
         for (int i = 0; i < len; i++) {
@@ -120,5 +143,6 @@ public class ValidString {
             if (c >= 'A' && c <= 'F') continue;
             throw new ParamException(this.k + ": " + this.showV + ", must be objectId");
         }
+        return this;
     }
 }

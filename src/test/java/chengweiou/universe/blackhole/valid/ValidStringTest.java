@@ -57,4 +57,13 @@ public class ValidStringTest {
             Valid.check("objectId", "5d44e0ee661d746770a17807asdfdsaf").is().objectId();
         });
     }
+
+    @Test
+    public void nullable() throws ParamException {
+        String nullable = null;
+        Valid.check("nullable", nullable).nullable().lengthIs(10);
+        Assertions.assertThrows(ParamException.class, () -> {
+            Valid.check("not nullable", nullable).is().lengthIs(10);
+        });
+    }
 }
