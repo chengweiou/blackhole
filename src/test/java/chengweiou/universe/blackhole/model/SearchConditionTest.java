@@ -23,7 +23,7 @@ public class SearchConditionTest {
 
     @Test
     public void getIdList() {
-        TestSearchCondition searchCondition = new TestSearchCondition();
+        TestSearchCondition searchCondition = Builder.set("idList", Arrays.asList()).to(new TestSearchCondition());
         Assertions.assertEquals("('0')", searchCondition.getForeachIdList());
         searchCondition = Builder.set("idList", Arrays.asList("3", "7")).to(new TestSearchCondition());
         Assertions.assertEquals("('3','7')", searchCondition.getForeachIdList());

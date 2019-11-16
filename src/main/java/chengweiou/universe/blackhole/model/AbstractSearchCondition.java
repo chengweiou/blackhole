@@ -16,7 +16,7 @@ public abstract class AbstractSearchCondition {
     /**
      * if (searchCondition.getIdList() != null) WHERE("id in ${searchCondition.foreachIdList}");
      */
-    private List<String> idList = new ArrayList<>();
+    private List<String> idList;
     /**
      * new SQL{{}}.toString().concat(searchCondition.getOrderBy()).concat(searchCondition.getSqlLimit());
      */

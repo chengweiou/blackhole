@@ -1,6 +1,7 @@
 package chengweiou.universe.blackhole.model.test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class BuilderEntity {
     private String stringType;
@@ -12,15 +13,7 @@ public class BuilderEntity {
     private boolean booleanSmallType;
     private int intSmallType;
     private LocalDate localDateType;
-    private LocalDate localDateTimeType;
-
-    public Boolean getBooleanType() {
-        return booleanType;
-    }
-
-    public void setBooleanType(Boolean booleanType) {
-        this.booleanType = booleanType;
-    }
+    private LocalDateTime localDateTimeType;
 
     @Override
     public String toString() {
@@ -38,40 +31,8 @@ public class BuilderEntity {
                 '}';
     }
 
-    public LocalDate getLocalDateType() {
-        return localDateType;
-    }
-
-    public void setLocalDateType(LocalDate localDateType) {
-        this.localDateType = localDateType;
-    }
-
-    public LocalDate getLocalDateTimeType() {
-        return localDateTimeType;
-    }
-
-    public void setLocalDateTimeType(LocalDate localDateTimeType) {
-        this.localDateTimeType = localDateTimeType;
-    }
-
-    public int getIntSmallType() {
-        return intSmallType;
-    }
-
-    public void setIntSmallType(int intSmallType) {
-        this.intSmallType = intSmallType;
-    }
-
     public String getStringType() {
         return stringType;
-    }
-
-    public boolean isBooleanSmallType() {
-        return booleanSmallType;
-    }
-
-    public void setBooleanSmallType(boolean booleanSmallType) {
-        this.booleanSmallType = booleanSmallType;
     }
 
     public void setStringType(String stringType) {
@@ -108,5 +69,45 @@ public class BuilderEntity {
 
     public void setObjectType(BuilderEntity objectType) {
         this.objectType = objectType;
+    }
+
+    public Boolean getBooleanType() {
+        return booleanType;
+    }
+
+    public void setBooleanType(Boolean booleanType) {
+        this.booleanType = booleanType;
+    }
+
+    public boolean isBooleanSmallType() {
+        return booleanSmallType;
+    }
+
+    public void setBooleanSmallType(boolean booleanSmallType) {
+        this.booleanSmallType = booleanSmallType;
+    }
+
+    public int getIntSmallType() {
+        return intSmallType;
+    }
+
+    public void setIntSmallType(int intSmallType) {
+        this.intSmallType = intSmallType;
+    }
+
+    public LocalDate getLocalDateType() {
+        return localDateType;
+    }
+
+    public void setLocalDateType(LocalDate localDateType) {
+        this.localDateType = localDateType;
+    }
+
+    public LocalDateTime getLocalDateTimeType() {
+        return localDateTimeType;
+    }
+
+    public void setLocalDateTimeType(LocalDateTime localDateTimeType) {
+        this.localDateTimeType = localDateTimeType;
     }
 }

@@ -71,8 +71,8 @@ public class BuilderTest {
     }
     @Test
     public void stringToDateTime() {
-        BuilderEntity e = Builder.set("localDateTimeType", "2017-01-01 22:22:22").to(BuilderEntity.class);
-        Assertions.assertEquals("2017-01-01 22:22:22", e.getLocalDateTimeType().toString());
+        BuilderEntity e = Builder.set("localDateTimeType", "2017-01-01T22:22:22").to(BuilderEntity.class);
+        Assertions.assertEquals("2017-01-01T22:22:22", e.getLocalDateTimeType().toString());
     }
 
     @Test

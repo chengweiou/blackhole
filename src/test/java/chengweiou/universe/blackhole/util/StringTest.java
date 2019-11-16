@@ -4,6 +4,11 @@ package chengweiou.universe.blackhole.util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 public class StringTest {
 
     @Test
@@ -23,4 +28,5 @@ public class StringTest {
         result = StringUtil.hidMidSecret("123456789012345678901234567890");
         Assertions.assertEquals("123******890", result);
     }
+
 }
