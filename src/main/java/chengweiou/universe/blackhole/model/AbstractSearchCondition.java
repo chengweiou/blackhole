@@ -48,7 +48,7 @@ public abstract class AbstractSearchCondition {
     }
     public String getSqlLimit() {
         if (limit == 0) return "";
-        return " limit " + skip + " offset" + limit + " ";
+        return " limit " + limit + " offset " + skip + " ";
     }
     public String getOrderBy() {
         List<String> list = new ArrayList<>();
