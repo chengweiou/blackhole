@@ -14,6 +14,7 @@ public class ValidString {
     private String v;
     private String showV;
     private boolean pass;
+    private boolean emptyWord;
 
     public static class Nullable {
         private String k;
@@ -34,6 +35,11 @@ public class ValidString {
             return new ValidString(this.k, this.v);
         }
     }
+    public ValidString allowEmptyWord() {
+        this.emptyWord = true;
+        return this;
+    }
+
     public ValidString(String k, String v) {
         this.k = k;
         this.v = v;
@@ -41,12 +47,14 @@ public class ValidString {
                 this.v.length() > 20 ? StringUtil.ellipsisMid(this.v, 20) : this.v :
                 "null";
         this.pass = false;
+        this.emptyWord = false;
     }
     public ValidString(boolean pass) {
         this.pass = pass;
     }
     public ValidString notEmpty() throws ParamException {
         if (this.pass) return this;
+        if (!emptyWord && !StringUtil.isNotEmptyWord(v)) throw new ParamException(this.k + ": " + this.showV + ", must includes words");
         if (this.v.isBlank()) throw new ParamException(this.k + ": " + this.showV + ", must not empty");
         return this;
     }

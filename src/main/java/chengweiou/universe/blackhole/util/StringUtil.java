@@ -1,5 +1,7 @@
 package chengweiou.universe.blackhole.util;
 
+import java.util.regex.Pattern;
+
 public class StringUtil {
     /**
      * length <= max || max/2 + ... + max/2
@@ -34,5 +36,11 @@ public class StringUtil {
         int keep = Math.min(max, v.length()) / 4;
         return v.substring(0, keep) + "******" + v.substring(v.length() - keep);
 
+    }
+
+    public static boolean isNotEmptyWord(String v) {
+        if (v == null) return false;
+        String testV = Pattern.compile("\\W|undefined|null").matcher(v).replaceAll("");
+        return !testV.isBlank();
     }
 }

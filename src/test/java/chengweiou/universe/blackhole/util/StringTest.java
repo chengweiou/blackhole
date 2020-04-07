@@ -38,4 +38,21 @@ public class StringTest {
         Assertions.assertEquals("12345******67890", result);
     }
 
+    @Test
+    public void isNotEmptyWord() {
+        boolean result = StringUtil.isNotEmptyWord(null);
+        Assertions.assertEquals(false, result);
+        result = StringUtil.isNotEmptyWord("undefined");
+        Assertions.assertEquals(false, result);
+        result = StringUtil.isNotEmptyWord("null");
+        Assertions.assertEquals(false, result);
+        result = StringUtil.isNotEmptyWord(",");
+        Assertions.assertEquals(false, result);
+        result = StringUtil.isNotEmptyWord(",null:");
+        Assertions.assertEquals(false, result);
+        result = StringUtil.isNotEmptyWord(",:...undefined.//nullnullundefined");
+        Assertions.assertEquals(false, result);
+        result = StringUtil.isNotEmptyWord("1234567;;8901234.5678901//234567890");
+        Assertions.assertEquals(true, result);
+    }
 }

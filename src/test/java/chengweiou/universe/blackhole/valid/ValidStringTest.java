@@ -66,4 +66,13 @@ public class ValidStringTest {
             Valid.check("not nullable", nullable).is().lengthIs(10);
         });
     }
+
+    @Test
+    public void emptyWord() throws ParamException {
+        String nullable = "null";
+        Valid.check("nullable", nullable).is().allowEmptyWord().notEmpty();
+        Assertions.assertThrows(ParamException.class, () -> {
+            Valid.check("not nullable", nullable).is().notEmpty();
+        });
+    }
 }
