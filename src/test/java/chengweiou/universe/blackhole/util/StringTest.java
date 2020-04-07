@@ -12,21 +12,30 @@ import java.util.stream.Collectors;
 public class StringTest {
 
     @Test
-    public void hidMid() {
-        String result = StringUtil.hidMid("1234567890");
+    public void ellipsisMid() {
+        String result = StringUtil.ellipsisMid("1234567890", 10);
         Assertions.assertEquals("1234567890", result);
 
-        result = StringUtil.hidMid("123456789012345678901234567890");
-        Assertions.assertEquals("1234567890******1234567890", result);
+        result = StringUtil.ellipsisMid("123456789012345678901234567890", 10);
+        Assertions.assertEquals("12345...67890", result);
     }
 
     @Test
-    public void hidMidSecret() {
-        String result = StringUtil.hidMidSecret("1234567890");
-        Assertions.assertEquals("123******890", result);
+    public void ellipsisEnd() {
+        String result = StringUtil.ellipsisEnd("123456789012345678901234567890", 10);
+        Assertions.assertEquals("1234567890...", result);
 
-        result = StringUtil.hidMidSecret("123456789012345678901234567890");
-        Assertions.assertEquals("123******890", result);
+        result = StringUtil.ellipsisEnd("1234", 10);
+        Assertions.assertEquals("1234", result);
+    }
+
+    @Test
+    public void securityMid() {
+        String result = StringUtil.securityMid("1234567890", 20);
+        Assertions.assertEquals("12******90", result);
+
+        result = StringUtil.securityMid("123456789012345678901234567890", 20);
+        Assertions.assertEquals("12345******67890", result);
     }
 
 }

@@ -38,7 +38,7 @@ public class ValidString {
         this.k = k;
         this.v = v;
         this.showV = this.v != null ?
-                this.v.length() > 20 ? StringUtil.hidMid(this.v) : this.v :
+                this.v.length() > 20 ? StringUtil.ellipsisMid(this.v, 20) : this.v :
                 "null";
         this.pass = false;
     }

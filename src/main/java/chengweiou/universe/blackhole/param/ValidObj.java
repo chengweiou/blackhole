@@ -33,7 +33,7 @@ public class ValidObj {
         this.k = k;
         this.v = v;
         this.showV = this.v != null ?
-                this.v.toString().length() > 20 ? StringUtil.hidMid(this.v.toString()) : this.v.toString() :
+                this.v.toString().length() > 20 ? StringUtil.ellipsisMid(this.v.toString(), 20) : this.v.toString() :
                 "null";
     }
     public ValidObj(boolean pass) {
