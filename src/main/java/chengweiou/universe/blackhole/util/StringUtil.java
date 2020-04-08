@@ -40,7 +40,10 @@ public class StringUtil {
 
     public static boolean isNotEmptyWord(String v) {
         if (v == null) return false;
-        String testV = Pattern.compile("\\W|undefined|null").matcher(v).replaceAll("");
+        String testV = Pattern.compile("[`~!@#$%^&*()_\\-+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|undefined|null")
+                .matcher(v)
+                .replaceAll("")
+                .trim();
         return !testV.isBlank();
     }
 }

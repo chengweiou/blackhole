@@ -54,5 +54,7 @@ public class StringTest {
         Assertions.assertEquals(false, result);
         result = StringUtil.isNotEmptyWord("1234567;;8901234.5678901//234567890");
         Assertions.assertEquals(true, result);
+        result = StringUtil.isNotEmptyWord("中文");
+        Assertions.assertEquals(true, result);
     }
 }
