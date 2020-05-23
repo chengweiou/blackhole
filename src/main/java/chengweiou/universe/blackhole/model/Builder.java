@@ -91,6 +91,7 @@ public class Builder {
             map.entrySet().stream().forEach(e -> {
                 String methodName = "set" + e.getKey().substring(0, 1).toUpperCase() + e.getKey().substring(1);
                 try {
+                    // todo 这里回报空指针，如果没有该属性
                     methodMap.get(methodName).invoke(instance, e.getValue());
                 } catch (IllegalAccessException | InvocationTargetException ex) {
                     LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
