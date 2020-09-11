@@ -4,6 +4,8 @@ import chengweiou.universe.blackhole.util.LogUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -99,6 +101,8 @@ public class Builder {
                     Object obj;
                     try {
                         switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
+                            case "java.lang.Integer":
+                                obj = new BigDecimal(e.getValue() + "").setScale(0, RoundingMode.HALF_UP).intValueExact(); break;
                             case "java.lang.String":
                                 if (e.getValue() instanceof LocalDateTime) {
                                     obj = ((LocalDateTime) e.getValue()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); break;
@@ -108,6 +112,7 @@ public class Builder {
                                 obj = LocalDate.parse(e.getValue().toString()); break;
                             case "java.time.LocalDateTime":
                                 obj = LocalDateTime.parse(e.getValue().toString()); break;
+
                             default:
                                 obj = methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());
                                 break;
