@@ -85,4 +85,11 @@ public class BuilderTest {
     public void setWrongName() {
         Assertions.assertThrows(NullPointerException.class, () -> Builder.set("wrongname", 8).to(BuilderEntity.class));
     }
+
+    @Test
+    public void setDoubleToInt() {
+        BuilderEntity e = Builder.set("intSmallType", 8.732).set("integerType", 8.732).to(BuilderEntity.class);
+        Assertions.assertEquals(9, e.getIntSmallType());
+        Assertions.assertEquals(9, e.getIntegerType());
+    }
 }

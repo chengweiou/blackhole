@@ -101,6 +101,7 @@ public class Builder {
                     Object obj;
                     try {
                         switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
+                            case "int":
                             case "java.lang.Integer":
                                 obj = new BigDecimal(e.getValue() + "").setScale(0, RoundingMode.HALF_UP).intValueExact(); break;
                             case "java.lang.String":
