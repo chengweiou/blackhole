@@ -1,11 +1,12 @@
 package chengweiou.universe.blackhole.model;
 
 
-import chengweiou.universe.blackhole.model.test.TestSearchCondition;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import chengweiou.universe.blackhole.model.test.TestSearchCondition;
 
 public class SearchConditionTest {
 
@@ -44,10 +45,10 @@ public class SearchConditionTest {
     @Test
     public void getSqlLimit() {
         TestSearchCondition searchCondition = new TestSearchCondition();
-        Assertions.assertEquals(" limit 0, 10 ", searchCondition.getSqlLimit());
+        Assertions.assertEquals(" limit 10 offset 0 ", searchCondition.getSqlLimit());
         searchCondition = Builder.set("limit", 3).to(new TestSearchCondition());
-        Assertions.assertEquals(" limit 0, 3 ", searchCondition.getSqlLimit());
+        Assertions.assertEquals(" limit 3 offset 0 ", searchCondition.getSqlLimit());
         searchCondition = Builder.set("limit", 3).set("skip", 9).to(new TestSearchCondition());
-        Assertions.assertEquals(" limit 9, 3 ", searchCondition.getSqlLimit());
+        Assertions.assertEquals(" limit 3 offset 9 ", searchCondition.getSqlLimit());
     }
 }
