@@ -24,6 +24,12 @@ public class Rest<T> implements Serializable {
         result.setData(data);
         return result;
     }
+    public static <T> Rest ok(RestCode code, T data) {
+        Rest result = new Rest();
+        result.setCode(code);
+        result.setData(data);
+        return result;
+    }
     public static Rest fail(RestCode code) {
         Rest result = new Rest();
         result.setCode(code);
@@ -33,11 +39,23 @@ public class Rest<T> implements Serializable {
     public static <T> Rest<T> from(String from) {
         Gson gson = createGson();
         return gson.fromJson(from, new TypeToken<Rest>() {}.getType());
-
     }
     public static <T> Rest<T> from(String from, Class c) {
         Gson gson = !RestCode.class.isAssignableFrom(c) ? createGson() : createGson(c);
         Type type = createType(Rest.class, c);
+        return gson.fromJson(from,  type);
+    }
+    /**
+     * 
+     * @param <T>
+     * @param from
+     * @param c projRestCode.class
+     * @param t data.class
+     * @return
+     */
+    public static <T> Rest<T> from(String from, Class c, Type... t) {
+        Gson gson = createGson(c);
+        Type type = createType(Rest.class, t);
         return gson.fromJson(from,  type);
     }
 
