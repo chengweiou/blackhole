@@ -10,14 +10,6 @@ sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
-    // maven {
-    //     url 'http://127.0.0.1:8001/repository/chengweiou/'
-    //     credentials {
-    //         username 'admin'
-    //         password 'admin123'
-    //     }
-    // }
-
 }
 
 dependencies {
@@ -30,7 +22,7 @@ dependencies {
 test {
     useJUnitPlatform()
     testLogging {
-        events "passed", "skipped", "failed"
+        events 'passed', 'skipped', 'failed'
     }
 }
 
@@ -45,28 +37,9 @@ publishing {
             name = 'GitHubPackages'
             url = uri('https://maven.pkg.github.com/chengweiou/blackhole')
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-                // username = '$mavenUser'
-                // password = '$mavenPassword'
+                username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
+                password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
             }
         }
     }
 }
-
-// publishing {
-//     publications {
-//         maven(MavenPublication) {
-//             from components.java
-//         }
-//     }
-//     repositories {
-//         maven {
-//             url 'http://127.0.0.1:8001/repository/chengweiou/'
-//             credentials {
-//                 username = 'admin'
-//                 password = 'admin123'
-//             }
-//         }
-//     }
-// }
