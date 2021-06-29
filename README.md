@@ -20,3 +20,8 @@ sudo chown -R 200 nexus
 docker run --rm -it -d --name nexus -p 8001:8081  -v ~/Desktop/docker/nexus/data:/nexus-data sonatype/nexus3
 ```
 登录后创建仓库chengweiou
+
+### github 仓库
+create token from github account
+add file: ~/.gradle/gradle.properties
+
