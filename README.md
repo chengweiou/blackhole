@@ -25,3 +25,7 @@ docker run --rm -it -d --name nexus -p 8001:8081  -v ~/Desktop/docker/nexus/data
 create token from github account
 add file: ~/.gradle/gradle.properties
 
+#### 在需要的项目加入
+maven { url uri('https://maven.pkg.github.com/chengweiou/blackhole') }
+implementation 'chengweiou.universe:blackhole:0.0.33'
+
