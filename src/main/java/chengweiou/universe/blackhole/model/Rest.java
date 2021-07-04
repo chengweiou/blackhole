@@ -46,7 +46,7 @@ public class Rest<T> implements Serializable {
         return gson.fromJson(from,  type);
     }
     /**
-     * 
+     *
      * @param <T>
      * @param from
      * @param c projRestCode.class
@@ -124,4 +124,3 @@ public class Rest<T> implements Serializable {
         this.message = message;
     }
 }
-
