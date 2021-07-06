@@ -3,16 +3,12 @@ package chengweiou.universe.blackhole.model;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+
+import chengweiou.universe.blackhole.util.GsonUtil;
 
 public class Rest<T> implements Serializable {
     private RestCode code;
@@ -56,7 +52,7 @@ public class Rest<T> implements Serializable {
     public static <T> Rest<T> from(String from, Class c, Type... t) {
         Gson gson = createGson(c);
         Type type = createType(Rest.class, t);
-        return gson.fromJson(from,  type);
+        return gson.fromJson(from, type);
     }
 
     private static ParameterizedType createType(final Class raw, final Type... args) {
@@ -82,13 +78,10 @@ public class Rest<T> implements Serializable {
         return createGson(BasicRestCode.class);
     }
     private static Gson createGson(Class c) {
-        return new GsonBuilder()
-                .registerTypeHierarchyAdapter(RestCode.class, (JsonDeserializer<?>) (json, typeOfT, context) -> Enum.valueOf(c, json.getAsString()))
-                .registerTypeAdapter(LocalDate.class, (JsonDeserializer) (json, typeOfT, context) -> LocalDate.parse(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(LocalDate.class, (JsonSerializer) (v, typeOfT, context) -> new JsonPrimitive(v.toString()))
-                .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer) (json, typeOfT, context) -> LocalDateTime.parse(json.getAsJsonPrimitive().getAsString()).atZone(ZoneId.systemDefault()).toLocalDateTime())
-                .registerTypeAdapter(LocalDateTime.class, (JsonSerializer) (v, typeOfT, context) -> new JsonPrimitive(v.toString()))
-                .create();
+        return GsonUtil.builder()
+            .registerTypeHierarchyAdapter(RestCode.class, (JsonDeserializer<?>) (json, typeOfT, context) -> Enum.valueOf(c, json.getAsString()))
+            .create()
+            ;
     }
 
     public RestCode getCode() {
