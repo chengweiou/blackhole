@@ -103,7 +103,7 @@ public class ValidString {
     }
     public ValidString include(List<String> list) throws ParamException {
         if (this.pass) return this;
-        if (list.stream().anyMatch(e -> !this.v.contains("a"))) throw new ParamException(this.k + ": " + this.showV + ", must include all of " + list);
+        if (list.stream().anyMatch(e -> !this.v.contains(e))) throw new ParamException(this.k + ": " + this.showV + ", must include all of " + list);
         return this;
     }
 
