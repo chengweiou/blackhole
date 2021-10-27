@@ -75,4 +75,13 @@ public class ValidStringTest {
             Valid.check("not nullable", nullable).is().notEmpty();
         });
     }
+
+    @Test
+    public void include() throws ParamException {
+        String include = "abcdef";
+        Valid.check("include", include).is().lengthIn(3, -1).include("a", "def", "b");
+        Assertions.assertThrows(ParamException.class, () -> {
+            Valid.check("not include", include).is().include("a", "notinclude", "b");
+        });
+    }
 }
