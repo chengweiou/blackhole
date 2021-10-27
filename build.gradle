@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'chengweiou.universe'
-version = '0.0.36'
+version = '0.0.38'
 sourceCompatibility = '11'
 
 repositories {
@@ -34,7 +34,6 @@ publishing {
     }
     repositories {
         maven {
-            name = 'GitHubPackages'
             url = uri('https://maven.pkg.github.com/chengweiou/blackhole')
             credentials {
                 username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')

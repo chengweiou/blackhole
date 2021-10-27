@@ -26,6 +26,7 @@ public class BaseLocalDateTimeFormatter {
                     .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
                     .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                     .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                    .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
                     .toFormatter();
                 return LocalDateTime.parse(text, formatter);
             } catch(DateTimeParseException ex) {
