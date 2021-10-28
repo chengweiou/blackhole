@@ -1,6 +1,5 @@
 package chengweiou.universe.blackhole.exception;
 
-import chengweiou.universe.blackhole.model.BasicRestCode;
 import chengweiou.universe.blackhole.model.RestCode;
 
 public class ProjException extends Exception {
