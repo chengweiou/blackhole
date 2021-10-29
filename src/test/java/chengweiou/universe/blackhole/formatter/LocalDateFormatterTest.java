@@ -23,6 +23,12 @@ public class LocalDateFormatterTest {
         text = "2021-10-26";
 		d = new BaseLocalDateFormatter().parse(text, null);
 		Assertions.assertEquals("2021-10-26", new BaseLocalDateFormatter().print(d, null));
+        text = "2021-10-26T20:12:12.254181";
+		d = new BaseLocalDateFormatter().parse(text, null);
+		Assertions.assertEquals("2021-10-26", new BaseLocalDateFormatter().print(d, null));
+        text = "2021-10-26 20:12:12.254";
+		d = new BaseLocalDateFormatter().parse(text, null);
+		Assertions.assertEquals("2021-10-26", new BaseLocalDateFormatter().print(d, null));
     }
 
 }
