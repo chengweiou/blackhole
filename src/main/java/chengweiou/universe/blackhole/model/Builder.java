@@ -1,11 +1,13 @@
 package chengweiou.universe.blackhole.model;
 
+import chengweiou.universe.blackhole.util.DateUtil;
 import chengweiou.universe.blackhole.util.LogUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -110,16 +112,16 @@ public class Builder {
                                 }
                                 obj = e.getValue().toString(); break;
                             case "java.time.LocalDate":
-                                obj = LocalDate.parse(e.getValue().toString()); break;
+                                obj = DateUtil.toDate(e.getValue().toString()); break;
                             case "java.time.LocalDateTime":
-                                obj = LocalDateTime.parse(e.getValue().toString()); break;
+                                obj = DateUtil.toDateTime(e.getValue().toString()); break;
 
                             default:
                                 obj = methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());
                                 break;
                         }
                         methodMap.get(methodName).invoke(instance, obj);
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException exception) {
+                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ParseException exception) {
                         LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
                     }
                 }

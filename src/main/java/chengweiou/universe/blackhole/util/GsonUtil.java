@@ -1,6 +1,7 @@
 package chengweiou.universe.blackhole.util;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,23 +29,31 @@ public class GsonUtil {
     private static final class LocalDateAdapter extends TypeAdapter<LocalDate> {
         @Override
         public void write( final JsonWriter out, final LocalDate value ) throws IOException {
-            out.value(value.toString());
+            out.value(DateUtil.toString(value));
         }
         @Override
         public LocalDate read( final JsonReader in ) throws IOException {
-            return LocalDate.parse(in.nextString());
+            try {
+                return DateUtil.toDate(in.nextString());
+            } catch (ParseException e) {
+                throw new IOException(e);
+            }
         }
     }
 
     private static final class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
         @Override
         public void write( final JsonWriter out, final LocalDateTime value ) throws IOException {
-            out.value(value.toString());
+            out.value(DateUtil.toString(value));
         }
 
         @Override
         public LocalDateTime read( final JsonReader in ) throws IOException {
-            return LocalDateTime.parse(in.nextString()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            try {
+                return DateUtil.toDateTime(in.nextString());
+            } catch (ParseException e) {
+                throw new IOException(e);
+            }
         }
     }
 }
