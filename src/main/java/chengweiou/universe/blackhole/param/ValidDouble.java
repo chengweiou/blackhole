@@ -59,14 +59,13 @@ public class ValidDouble {
         if (this.v < min || this.v > max) throw new ParamException(this.k + ": " + this.showV + ", must " + min + " <= " + this.showV + " <= " + max);
         return this;
     }
-    public ValidDouble notOf(Integer ...list) throws ParamException {
+    public ValidDouble notOf(Double ...list) throws ParamException {
         if (pass) return this;
         return notOf(Arrays.asList(list));
     }
-    public ValidDouble notOf(List<Integer> list) throws ParamException {
+    public ValidDouble notOf(List<Double> list) throws ParamException {
         if (pass) return this;
         if (!list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must not be one of " + list);
         return this;
     }
 }
-

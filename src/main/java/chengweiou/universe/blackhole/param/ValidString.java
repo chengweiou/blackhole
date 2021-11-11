@@ -1,13 +1,11 @@
 package chengweiou.universe.blackhole.param;
 
-import chengweiou.universe.blackhole.exception.ParamException;
-import chengweiou.universe.blackhole.util.StringUtil;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+
+import chengweiou.universe.blackhole.exception.ParamException;
+import chengweiou.universe.blackhole.util.DateUtil;
+import chengweiou.universe.blackhole.util.StringUtil;
 
 public class ValidString {
     private String k;
@@ -110,33 +108,28 @@ public class ValidString {
     public ValidString date() throws ParamException {
         if (this.pass) return this;
         try {
-            LocalDate.parse(this.v);
+            DateUtil.toDate(this.v);
             return this;
-        } catch (DateTimeParseException e) {
+        } catch (Exception e) {
             throw new ParamException(this.k + ": " + this.showV + ", must be format of date: yyyy-MM-dd");
         }
     }
     public ValidString time() throws ParamException {
         if (this.pass) return this;
         try {
-            LocalDateTime.parse(this.v);
+            DateUtil.toInstant(this.v);
             return this;
-        } catch (DateTimeParseException e) {
-            throw new ParamException(this.k + ": " + this.showV + ", must be format of datetime: yyyy-MM-ddTHH:mm:ss");
+        } catch (Exception e) {
+            throw new ParamException(this.k + ": " + this.showV + ", must be format of datetime: yyyy-MM-ddTHH:mm:ssZ");
         }
     }
     public ValidString dateOrTime() throws ParamException {
         if (this.pass) return this;
         try {
-            LocalDate.parse(this.v);
+            DateUtil.toInstant(this.v);
             return this;
-        } catch (DateTimeParseException e1) {
-            try {
-                LocalDateTime.parse(this.v);
-                return this;
-            } catch (DateTimeParseException e2) {
-                throw new ParamException(this.k + ": " + this.showV + ", must be format of date or datetime: yyyy-MM-dd | yyyy-MM-ddTHH:mm:ss");
-            }
+        } catch (Exception e1) {
+            throw new ParamException(this.k + ": " + this.showV + ", must be format of date or datetime: yyyy-MM-dd | yyyy-MM-ddTHH:mm:ssZ");
         }
 
     }

@@ -1,7 +1,7 @@
 package chengweiou.universe.blackhole.model.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import chengweiou.universe.blackhole.model.NotNullObj;
 import chengweiou.universe.blackhole.model.NullObj;
@@ -10,17 +10,17 @@ import lombok.Data;
 @Data
 public abstract class ServiceEntity implements NotNullObj, Serializable {
     protected Long id;
-    protected LocalDateTime createAt;
-    protected LocalDateTime updateAt;
+    protected Instant createAt;
+    protected Instant updateAt;
 
     public void fillNotRequire() {
     }
 
     public void createAt() {
-        createAt = LocalDateTime.now();
+        createAt = Instant.now();
     }
     public void updateAt() {
-        updateAt = LocalDateTime.now();
+        updateAt = Instant.now();
     }
 
     public static final ServiceEntity NULL = new Null();

@@ -1,14 +1,10 @@
 package chengweiou.universe.blackhole.model;
 
-import chengweiou.universe.blackhole.util.DateUtil;
-import chengweiou.universe.blackhole.util.LogUtil;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -16,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import chengweiou.universe.blackhole.util.DateUtil;
+import chengweiou.universe.blackhole.util.LogUtil;
 
 public class Builder {
     /**
@@ -115,6 +114,8 @@ public class Builder {
                                 obj = DateUtil.toDate(e.getValue().toString()); break;
                             case "java.time.LocalDateTime":
                                 obj = DateUtil.toDateTime(e.getValue().toString()); break;
+                            case "java.time.Instant":
+                                obj = DateUtil.toInstant(e.getValue().toString()); break;
 
                             default:
                                 obj = methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());

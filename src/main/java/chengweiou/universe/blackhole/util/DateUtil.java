@@ -1,6 +1,7 @@
 package chengweiou.universe.blackhole.util;
 
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -10,7 +11,6 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class DateUtil {
     private static List<String> list = Arrays.asList(
@@ -56,8 +56,19 @@ public class DateUtil {
         }
         return ZonedDateTime.parse(text).toLocalDateTime();
     }
-
     public static String toString(LocalDateTime object) {
         return object.format(DateTimeFormatter.ofPattern(list.get(0)));
+    }
+
+    public static Instant toInstant(String text) throws ParseException {
+        if (text.length() == 10) text = text + "T00:00:00Z";
+        if (text.indexOf(' ') == 10) text = text.replace(" ", "T");
+        if (text.length() > 20) text = text.substring(0, 19); // 2021-10-26T20:12:12.254181 -> 2021-10-26T20:12:12
+        if (text.indexOf('Z') != text.length()-1) text = text + "Z";
+        return Instant.parse(text);
+    }
+
+    public static String toString(Instant object) {
+        return object.toString();
     }
 }

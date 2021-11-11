@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 
 public class BuilderTest {
@@ -63,6 +64,11 @@ public class BuilderTest {
         BuilderEntity e = Builder.set("stringType", LocalDateTime.of(2019, 01, 01, 0, 0, 0)).to(BuilderEntity.class);
         Assertions.assertEquals("2019-01-01T00:00:00", e.getStringType());
     }
+    @Test
+    public void InstantToString() {
+        BuilderEntity e = Builder.set("stringType", LocalDateTime.of(2019, 01, 01, 0, 0, 0).toInstant(ZoneOffset.UTC)).to(BuilderEntity.class);
+        Assertions.assertEquals("2019-01-01T00:00:00Z", e.getStringType());
+    }
 
     @Test
     public void stringToDate() {
@@ -73,6 +79,11 @@ public class BuilderTest {
     public void stringToDateTime() {
         BuilderEntity e = Builder.set("localDateTimeType", "2017-01-01T22:22:22").to(BuilderEntity.class);
         Assertions.assertEquals("2017-01-01T22:22:22", e.getLocalDateTimeType().toString());
+    }
+    @Test
+    public void stringToInstant() {
+        BuilderEntity e = Builder.set("instantType", "2017-01-01T22:22:22").to(BuilderEntity.class);
+        Assertions.assertEquals("2017-01-01T22:22:22Z", e.getInstantType().toString());
     }
 
     @Test

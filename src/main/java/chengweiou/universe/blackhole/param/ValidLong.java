@@ -60,11 +60,11 @@ public class ValidLong {
         return this;
     }
 
-    public ValidLong notOf(Integer ...list) throws ParamException {
+    public ValidLong notOf(Long ...list) throws ParamException {
         if (pass) return this;
         return notOf(Arrays.asList(list));
     }
-    public ValidLong notOf(List<Integer> list) throws ParamException {
+    public ValidLong notOf(List<Long> list) throws ParamException {
         if (pass) return this;
         if (!list.contains(this.v)) throw new ParamException(this.k + ": " + this.showV + ", must not be one of " + list);
         return this;

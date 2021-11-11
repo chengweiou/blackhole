@@ -1,17 +1,11 @@
 package chengweiou.universe.blackhole.valid;
 
 
-import chengweiou.universe.blackhole.exception.ParamException;
-import chengweiou.universe.blackhole.model.Builder;
-import chengweiou.universe.blackhole.model.test.BuilderEntity;
-import chengweiou.universe.blackhole.model.test.TestEnum;
-import chengweiou.universe.blackhole.param.Valid;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import chengweiou.universe.blackhole.exception.ParamException;
+import chengweiou.universe.blackhole.param.Valid;
 
 
 public class ValidStringTest {
@@ -28,7 +22,7 @@ public class ValidStringTest {
     public void date() throws ParamException {
         Valid.check("date", "2017-01-02").is().date();
         Assertions.assertThrows(ParamException.class, () -> {
-            Valid.check("date", "2017-01-02T23:22:00").is().date();
+            Valid.check("date", "2017-01-02T23:22:00sdf").is().date();
         });
     }
 
@@ -36,7 +30,7 @@ public class ValidStringTest {
     public void time() throws ParamException {
         Valid.check("time", "2017-01-02T23:22:00").is().time();
         Assertions.assertThrows(ParamException.class, () -> {
-            Valid.check("time", "2017-01-02").is().time();
+            Valid.check("time", "2017-01-02ddd").is().time();
         });
     }
 
