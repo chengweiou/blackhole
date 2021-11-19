@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +16,7 @@ import chengweiou.universe.blackhole.util.LogUtil;
 
 public class BaseDaoImpl<T> {
     public String save(T e) {
+        AtomicBoolean fail = new AtomicBoolean();
         List<Field> fieldList = Stream.of(
                     Arrays.asList(e.getClass().getDeclaredFields()),
                     Arrays.asList(e.getClass().getSuperclass().getDeclaredFields())
@@ -22,13 +24,19 @@ public class BaseDaoImpl<T> {
                 .filter(field -> {
                     field.setAccessible(true);
                     try {
-                        return !Modifier.isStatic(field.getModifiers()) && field.get(e)!=null;
+                        Object v = field.get(e);
+                        if (field.getName().equals("id") && v!=null && v.equals(0L)) fail.set(true);
+                        return !Modifier.isStatic(field.getModifiers()) && v!=null;
                     } catch (IllegalArgumentException | IllegalAccessException e1) {
                         e1.printStackTrace();
                         return false;
                     }
                 })
                 .collect(Collectors.toList());
+                if (fail.get()) {
+                    LogUtil.e("trying to insert (id=0) into " + getTable(e) + ". Please check code");
+                    throw new NullPointerException("trying to insert (id=0) into " + getTable(e) + ". Please check code");
+                }
         return "insert into " + getTable(e)
             + " (" + fieldList.stream().map(Field::getName).collect(Collectors.joining(",")) + ")"
             + " values (" + fieldList.stream().map(f -> "#{"+f.getName()+"}").collect(Collectors.joining(",")) + ")";
