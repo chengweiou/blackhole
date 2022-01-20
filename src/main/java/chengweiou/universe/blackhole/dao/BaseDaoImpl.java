@@ -116,6 +116,16 @@ public class BaseDaoImpl<T> {
             ;
     }
 
+    public String findId(Map<String, Object> map) {
+        AbstractSearchCondition searchCondition = (AbstractSearchCondition) map.get("searchCondition");
+        T sample = (T) map.get("sample");
+        String where = (String) map.get("where");
+        return "select id from " + getTable(sample)
+                + where
+                + searchCondition.getOrderBy() + searchCondition.getSqlLimit()
+            ;
+    }
+
     private String getTable(T e) {
         String name = e.getClass().getName();
         // 遇到内部静态类，采用外部类名称
