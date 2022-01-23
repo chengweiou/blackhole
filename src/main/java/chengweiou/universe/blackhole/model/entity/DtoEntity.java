@@ -7,7 +7,7 @@ import chengweiou.universe.blackhole.model.NotNullObj;
 import lombok.Data;
 
 @Data
-public abstract class DtoEntity implements NotNullObj, Serializable {
+public class DtoEntity implements NotNullObj, Serializable {
     protected Long id;
     protected Instant createAt;
     protected Instant updateAt;
