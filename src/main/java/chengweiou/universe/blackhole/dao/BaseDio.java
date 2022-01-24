@@ -15,6 +15,7 @@ import chengweiou.universe.blackhole.util.LogUtil;
 
 public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     protected String getDefaultSort() { return "updateAt"; }
+    protected boolean getDefaultSortAz() { return false; }
     protected abstract Class getTClass();
     protected abstract <Dao extends AbstractBaseDao> Dao getDao();
 
@@ -102,6 +103,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
 
     public List<T> find(AbstractSearchCondition searchCondition, T sample) {
         searchCondition.setDefaultSort(getDefaultSort());
+        searchCondition.setDefaultSortAz(getDefaultSortAz());
         Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
         String where = baseFind(searchCondition, dtoSample);
         List<Dto> dtoList = getDao().find(searchCondition, dtoSample, where);
@@ -111,6 +113,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
 
     public List<T> findId(AbstractSearchCondition searchCondition, T sample) {
         searchCondition.setDefaultSort(getDefaultSort());
+        searchCondition.setDefaultSortAz(getDefaultSortAz());
         Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
         String where = baseFind(searchCondition, dtoSample);
         List<Dto> dtoList = getDao().findId(searchCondition, dtoSample, where);
