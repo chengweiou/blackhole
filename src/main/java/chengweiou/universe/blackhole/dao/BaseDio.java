@@ -111,13 +111,12 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         return result;
     }
 
-    public List<T> findId(AbstractSearchCondition searchCondition, T sample) {
+    public List<String> findId(AbstractSearchCondition searchCondition, T sample) {
         searchCondition.setDefaultSort(getDefaultSort());
         searchCondition.setDefaultSortAz(getDefaultSortAz());
         Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
         String where = baseFind(searchCondition, dtoSample);
-        List<Dto> dtoList = getDao().findId(searchCondition, dtoSample, where);
-        List<T> result = dtoList.stream().map(e -> (T) e.toBean()).collect(Collectors.toList());
+        List<String> result = getDao().findId(searchCondition, dtoSample, where);
         return result;
     }
 
