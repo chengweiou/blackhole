@@ -17,29 +17,26 @@ import chengweiou.universe.blackhole.util.LogUtil;
 public class BaseDaoImpl<T> {
     public String save(T e) {
         AtomicBoolean fail = new AtomicBoolean();
-        List<Field> fieldList = Stream.of(
-                    Arrays.asList(e.getClass().getDeclaredFields()),
-                    Arrays.asList(e.getClass().getSuperclass().getDeclaredFields())
-                ).flatMap(List::stream)
+        List<String> fieldNameList = getFieldList(e).stream()
                 .filter(field -> {
-                    field.setAccessible(true);
                     try {
                         Object v = field.get(e);
                         if (field.getName().equals("id") && v!=null && v.equals(0L)) fail.set(true);
-                        return !Modifier.isStatic(field.getModifiers()) && v!=null;
+                        return v!=null;
                     } catch (IllegalArgumentException | IllegalAccessException e1) {
                         e1.printStackTrace();
                         return false;
                     }
                 })
+                .map(Field::getName)
                 .collect(Collectors.toList());
                 if (fail.get()) {
                     LogUtil.e("trying to insert (id=0) into " + getTable(e) + ". Please check code");
                     throw new NullPointerException("trying to insert (id=0) into " + getTable(e) + ". Please check code");
                 }
         return "insert into " + getTable(e)
-            + " (" + fieldList.stream().map(Field::getName).collect(Collectors.joining(",")) + ")"
-            + " values (" + fieldList.stream().map(f -> "#{"+f.getName()+"}").collect(Collectors.joining(",")) + ")";
+            + " (" + fieldNameList.stream().collect(Collectors.joining(",")) + ")"
+            + " values (" + fieldNameList.stream().map(name -> "#{"+name+"}").collect(Collectors.joining(",")) + ")";
     }
 
     public String delete(T e) {
@@ -47,26 +44,63 @@ public class BaseDaoImpl<T> {
             + " where id=#{id}";
     }
 
+    public String deleteByKey(T e) {
+        return "delete from " + getTable(e)
+            + " where "
+            + getKeyFieldNameList(e).stream().map(name -> name + "=#{"+name+"} ").collect(Collectors.joining(" and "));
+    }
+
+    public String deleteBySample(Map<String, Object> map) {
+        T e = (T) map.get("e");
+        T sample = (T) map.get("sample");
+        return "delete from " + getTable(e)
+            + " where "
+            + getSampleFieldNameList(e).stream().map(name -> name + "=#{sample."+name+"} ").collect(Collectors.joining(" and "));
+    }
+
+    public String deleteByIdList(Map<String, Object> map) {
+        T e = (T) map.get("e");
+        List idList = (List) map.get("idList");
+        return "delete from " + getTable(e)
+            + " where id = "
+            + " any ( select id from " + getTable(e) + " where id in "
+                + "(" + idList.stream().map(id->id.toString()).collect(Collectors.joining(",")) + ")"
+            + " )";
+    }
+
     public String update(T e) {
-        List<Field> fieldList = Stream.of(
-                    Arrays.asList(e.getClass().getDeclaredFields()),
-                    Arrays.asList(e.getClass().getSuperclass().getDeclaredFields())
-                ).flatMap(List::stream)
-                .filter(field -> !Modifier.isStatic(field.getModifiers()))
-                .filter(f -> !f.getName().equals("id") && !f.getName().equals("createAt"))
-                .filter(f -> {
-                    try {
-                        f.setAccessible(true);
-                        return f.get(e) != null;
-                    } catch (IllegalAccessException ex) {
-                        LogUtil.e("访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
         return "update " + getTable(e) + " set "
-            + fieldList.stream().map(f -> f.getName() + "=#{"+f.getName()+"} ").collect(Collectors.joining(","))
+            + fieldNameList.stream().map(name -> name + "=#{"+name+"} ").collect(Collectors.joining(","))
             + " where id=#{id}";
+    }
+
+    public String updateByKey(T e) {
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        return "update " + getTable(e) + " set "
+            + fieldNameList.stream().map(name -> name + "=#{"+name+"} ").collect(Collectors.joining(","))
+            + " where "
+            + getKeyFieldNameList(e).stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
+    }
+
+    public String updateBySample(Map<String, Object> map) {
+        T e = (T) map.get("e");
+        T sample = (T) map.get("sample");
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        return "update " + getTable(e) + " set "
+            + fieldNameList.stream().map(name -> name + "=#{e."+name+"} ").collect(Collectors.joining(","))
+            + " where "
+            + getSampleFieldNameList(e).stream().map(name -> name + "=#{sample."+name+"} ").collect(Collectors.joining(" and "));
+    }
+
+    public String updateByIdList(Map<String, Object> map) {
+        T e = (T) map.get("e");
+        List idList = (List) map.get("idList");
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        return "update " + getTable(e) + " set "
+            + fieldNameList.stream().map(name -> name + "=#{e."+name+"} ").collect(Collectors.joining(","))
+            + " where id in "
+            + "(" + idList.stream().map(id->id.toString()).collect(Collectors.joining(",")) + ")";
     }
 
     public String findById(T e) {
@@ -75,21 +109,15 @@ public class BaseDaoImpl<T> {
     }
 
     public String countByKey(T e) {
-        List<String> fieldNameList = Arrays.asList(e.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
-                .filter(field -> field.isAnnotationPresent(DtoKey.class))
-                .map(Field::getName)
-                .collect(Collectors.toList());
         return "select count(*) from " + getTable(e)
-            + " where " + fieldNameList.stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
+            + " where "
+            + getKeyFieldNameList(e).stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
     }
 
     public String findByKey(T e) {
-        List<String> fieldNameList = Arrays.asList(e.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
-                .filter(field -> field.isAnnotationPresent(DtoKey.class))
-                .map(Field::getName)
-                .collect(Collectors.toList());
         return "select * from " + getTable(e)
-            + " where " + fieldNameList.stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
+            + " where "
+            + getKeyFieldNameList(e).stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
     }
 
     /**
@@ -132,5 +160,47 @@ public class BaseDaoImpl<T> {
         int end = name.contains("$") ? name.lastIndexOf("$") : name.length();
         name = name.substring(name.lastIndexOf(".")+1, end);
         return name.substring(0, 1).toLowerCase() + name.substring(1);
+    }
+
+    private List<Field> getFieldList(T e) {
+        return Stream.of(
+                    Arrays.asList(e.getClass().getDeclaredFields()),
+                    Arrays.asList(e.getClass().getSuperclass().getDeclaredFields())
+                ).flatMap(List::stream)
+                .filter(field -> !Modifier.isStatic(field.getModifiers()))
+                .filter(f -> {
+                    f.setAccessible(true);
+                    try {
+                        return f.get(e) != null;
+                    } catch (IllegalAccessException ex) {
+                        LogUtil.e("访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getKeyFieldNameList(T e) {
+        return Arrays.asList(e.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
+                .filter(field -> field.isAnnotationPresent(DtoKey.class))
+                .map(Field::getName)
+                .collect(Collectors.toList());
+    }
+    private List<String> getSampleFieldNameList(T e) {
+        return Stream.of(
+                    Arrays.asList(e.getClass().getDeclaredFields())
+                ).flatMap(List::stream)
+                .filter(field -> !Modifier.isStatic(field.getModifiers()))
+                .filter(f -> {
+                    try {
+                        f.setAccessible(true);
+                        return f.get(e) != null;
+                    } catch (IllegalAccessException ex) {
+                        LogUtil.e("sample 访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
+                        return false;
+                    }
+                })
+                .map(Field::getName)
+                .collect(Collectors.toList());
     }
 }
