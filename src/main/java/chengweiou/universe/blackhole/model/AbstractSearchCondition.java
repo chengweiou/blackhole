@@ -43,7 +43,7 @@ public abstract class AbstractSearchCondition {
 
     public String getForeachIdList() {
         if (idList.isEmpty()) return "('0')";
-        idList = idList.parallelStream().map(e -> e.replaceAll("'", "").replaceAll("\"", "")).distinct().collect(Collectors.toList());
+        idList = idList.parallelStream().map(e -> e.replaceAll("'", "").replaceAll("\"", "")).distinct().toList();
         return "(" + idList.parallelStream().map(e -> "'" + e + "'").collect(Collectors.joining(",")) + ")";
     }
     public String getSqlLimit() {
@@ -193,4 +193,3 @@ public abstract class AbstractSearchCondition {
         this.defaultSortAz = defaultSortAz;
     }
 }
-

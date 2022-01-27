@@ -89,7 +89,7 @@ public class Builder {
         }
 
         private <T> void setProp(Class c, T instance) {
-            List<Method> methodList = Arrays.asList(c.getMethods()).stream().filter(e -> e.getName().startsWith("set") && e.getParameterCount()==1).collect(Collectors.toList());
+            List<Method> methodList = Arrays.asList(c.getMethods()).stream().filter(e -> e.getName().startsWith("set") && e.getParameterCount()==1).toList();
             Map<String, Method> methodMap = methodList.stream().collect(Collectors.toMap(Method::getName, e -> e));
             map.entrySet().stream().forEach(e -> {
                 String methodName = "set" + e.getKey().substring(0, 1).toUpperCase() + e.getKey().substring(1);

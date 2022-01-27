@@ -73,8 +73,7 @@ public class LogUtil {
         if (keepList.isEmpty()) {
             return;
         }
-        List<StackTraceElement> list = Arrays.asList(array).stream().filter(e -> keepList.stream().anyMatch(keep -> e.getClassName().startsWith(keep))).collect(Collectors.toList());
+        List<StackTraceElement> list = Arrays.asList(array).stream().filter(e -> keepList.stream().anyMatch(keep -> e.getClassName().startsWith(keep))).toList();
         throwable.setStackTrace(list.toArray(new StackTraceElement[list.size()]));
     }
 }
-

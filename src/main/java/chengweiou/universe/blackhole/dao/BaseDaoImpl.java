@@ -29,7 +29,7 @@ public class BaseDaoImpl<T> {
                     }
                 })
                 .map(Field::getName)
-                .collect(Collectors.toList());
+                .toList();
                 if (fail.get()) {
                     LogUtil.e("trying to insert (id=0) into " + getTable(e) + ". Please check code");
                     throw new NullPointerException("trying to insert (id=0) into " + getTable(e) + ". Please check code");
@@ -69,14 +69,14 @@ public class BaseDaoImpl<T> {
     }
 
     public String update(T e) {
-        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).toList();
         return "update " + getTable(e) + " set "
             + fieldNameList.stream().map(name -> name + "=#{"+name+"} ").collect(Collectors.joining(","))
             + " where id=#{id}";
     }
 
     public String updateByKey(T e) {
-        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).toList();
         return "update " + getTable(e) + " set "
             + fieldNameList.stream().map(name -> name + "=#{"+name+"} ").collect(Collectors.joining(","))
             + " where "
@@ -86,7 +86,7 @@ public class BaseDaoImpl<T> {
     public String updateBySample(Map<String, Object> map) {
         T e = (T) map.get("e");
         T sample = (T) map.get("sample");
-        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).toList();
         return "update " + getTable(e) + " set "
             + fieldNameList.stream().map(name -> name + "=#{e."+name+"} ").collect(Collectors.joining(","))
             + " where "
@@ -96,7 +96,7 @@ public class BaseDaoImpl<T> {
     public String updateByIdList(Map<String, Object> map) {
         T e = (T) map.get("e");
         List idList = (List) map.get("idList");
-        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).collect(Collectors.toList());
+        List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).toList();
         return "update " + getTable(e) + " set "
             + fieldNameList.stream().map(name -> name + "=#{e."+name+"} ").collect(Collectors.joining(","))
             + " where id in "
@@ -177,14 +177,14 @@ public class BaseDaoImpl<T> {
                         return false;
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<String> getKeyFieldNameList(T e) {
         return Arrays.asList(e.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .filter(field -> field.isAnnotationPresent(DtoKey.class))
                 .map(Field::getName)
-                .collect(Collectors.toList());
+                .toList();
     }
     private List<String> getSampleFieldNameList(T e) {
         return Stream.of(
@@ -201,6 +201,6 @@ public class BaseDaoImpl<T> {
                     }
                 })
                 .map(Field::getName)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

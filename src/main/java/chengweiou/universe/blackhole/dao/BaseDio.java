@@ -91,7 +91,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         List<String> fieldNameList = Arrays.asList(dto.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
             .filter(field -> field.isAnnotationPresent(DtoKey.class))
             .map(Field::getName)
-            .collect(Collectors.toList());
+            .toList();
         return !fieldNameList.isEmpty();
     }
 
@@ -107,7 +107,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
         String where = baseFind(searchCondition, dtoSample);
         List<Dto> dtoList = getDao().find(searchCondition, dtoSample, where);
-        List<T> result = dtoList.stream().map(e -> (T) e.toBean()).collect(Collectors.toList());
+        List<T> result = dtoList.stream().map(e -> (T) e.toBean()).toList();
         return result;
     }
 

@@ -16,7 +16,7 @@ public class ValidObjTest {
 
     @Test
     public void ofEnum() throws ParamException {
-        Valid.check("enum", TestEnum.ENUM1).is().of(Stream.of(TestEnum.values()).map(TestEnum::toString).collect(Collectors.toList()));
+        Valid.check("enum", TestEnum.ENUM1).is().of(Stream.of(TestEnum.values()).map(TestEnum::toString).toList());
         Assertions.assertThrows(ParamException.class, () -> {
             Valid.check("enum", TestEnum.ENUM1).is().of(Arrays.asList("ENUM-NONE", "ENUM-WRONG"));
         });
