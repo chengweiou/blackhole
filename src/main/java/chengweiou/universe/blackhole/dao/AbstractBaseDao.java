@@ -30,5 +30,5 @@ public interface AbstractBaseDao<Dto extends DtoEntity> {
 
     List<Dto> find(AbstractSearchCondition searchCondition, Dto sample, String where);
 
-    List<Dto> findId(AbstractSearchCondition searchCondition, Dto sample, String where);
+    List<String> findId(AbstractSearchCondition searchCondition, Dto sample, String where);
 }
