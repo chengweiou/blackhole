@@ -60,7 +60,7 @@ public class BaseDaoImpl<T> {
 
     public String deleteByIdList(Map<String, Object> map) {
         T e = (T) map.get("e");
-        List idList = (List) map.get("idList");
+        List<String> idList = (List) map.get("idList");
         return "delete from " + getTable(e)
             + " where id = "
             + " any ( select id from " + getTable(e) + " where id in "
@@ -95,7 +95,7 @@ public class BaseDaoImpl<T> {
 
     public String updateByIdList(Map<String, Object> map) {
         T e = (T) map.get("e");
-        List idList = (List) map.get("idList");
+        List<String> idList = (List) map.get("idList");
         List<String> fieldNameList = getFieldList(e).stream().map(Field::getName).filter(name -> !name.equals("id") && !name.equals("createAt")).toList();
         return "update " + getTable(e) + " set "
             + fieldNameList.stream().map(name -> name + "=#{e."+name+"} ").collect(Collectors.joining(","))

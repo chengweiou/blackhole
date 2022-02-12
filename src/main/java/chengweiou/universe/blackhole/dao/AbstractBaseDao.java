@@ -15,12 +15,12 @@ public interface AbstractBaseDao<Dto extends DtoEntity> {
     long delete(Dto e);
     long deleteByKey(Dto e);
     long deleteBySample(Dto e, Dto sample);
-    long deleteByIdList(Dto e, List idList);
+    long deleteByIdList(Dto e, List<String> idList);
 
     long update(Dto e);
     long updateByKey(Dto e);
     long updateBySample(Dto e, Dto sample);
-    long updateByIdList(Dto e, List idList);
+    long updateByIdList(Dto e, List<String> idList);
 
     Dto findById(Dto e);
     long countByKey(Dto e);

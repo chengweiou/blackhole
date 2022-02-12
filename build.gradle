@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'chengweiou.universe'
-version = '0.0.54'
+version = '0.0.55'
 sourceCompatibility = '17'
 
 repositories {
