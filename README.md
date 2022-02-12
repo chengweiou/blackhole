@@ -26,6 +26,11 @@ create token from github account
 add file: ~/.gradle/gradle.properties
 
 #### 在需要的项目加入
-maven { url uri('https://maven.pkg.github.com/chengweiou/blackhole') }
+maven {
+            url = uri('https://maven.pkg.github.com/chengweiou/blackhole')
+            credentials {
+                username = project.findProperty('gpr.user') ?: System.getenv('USERNAME')
+                password = project.findProperty('gpr.key') ?: System.getenv('TOKEN')
+            }
+        }
 implementation 'chengweiou.universe:blackhole:0.0.33'
-

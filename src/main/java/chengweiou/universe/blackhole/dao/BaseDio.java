@@ -43,11 +43,12 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
     public void deleteBySample(T e, T sample) throws FailException {
         long count = getDao().deleteBySample(e.toDto(), sample.toDto());
-        if (count != 1) throw new FailException();
+        if (count == 0) throw new FailException();
     }
-    public void deleteByIdList(T e, List idList) throws FailException {
-        long count = getDao().deleteByIdList(e.toDto(), idList);
-        if (count != 1) throw new FailException();
+    public void deleteByIdList(List idList) throws FailException {
+        long count = getDao().deleteByIdList((Dto) getNull().toDto(), idList);
+        if (count != idList.size()) LogUtil.i("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
+        if (count == 0) throw new FailException();
     }
 
     public long update(T e) {
