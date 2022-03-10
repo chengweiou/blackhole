@@ -3,6 +3,7 @@ package chengweiou.universe.blackhole.dao;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,12 +98,14 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
 
     public long count(AbstractSearchCondition searchCondition, T sample) {
+        if (searchCondition.getIdList() != null && searchCondition.getIdList().isEmpty()) return 0;
         Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
         String where = baseFind(searchCondition, dtoSample);
         return getDao().count(searchCondition, dtoSample, where);
     }
 
     public List<T> find(AbstractSearchCondition searchCondition, T sample) {
+        if (searchCondition.getIdList() != null && searchCondition.getIdList().isEmpty()) return Collections.emptyList();
         searchCondition.setDefaultSort(getDefaultSort());
         searchCondition.setDefaultSortAz(getDefaultSortAz());
         Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
