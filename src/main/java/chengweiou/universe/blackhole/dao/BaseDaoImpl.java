@@ -141,7 +141,7 @@ public class BaseDaoImpl<T> {
         String result = "select * from " + getTable(sample)
                         + where
                         + searchCondition.getOrderBy() + searchCondition.getSqlLimit();
-        if (!needLimit(result, where, searchCondition.getSqlLimit())) result += searchCondition.getSqlLimit(true);
+        if (needLimit(result, where, searchCondition)) result += searchCondition.getSqlLimit(true);
         return result;
     }
 
@@ -152,18 +152,19 @@ public class BaseDaoImpl<T> {
         String result = "select * from " + getTable(sample)
                         + where
                         + searchCondition.getOrderBy() + searchCondition.getSqlLimit();
-        if (!needLimit(result, where, searchCondition.getSqlLimit())) result += searchCondition.getSqlLimit(true);
+        if (needLimit(result, where, searchCondition)) result += searchCondition.getSqlLimit(true);
         return result;
     }
 
-    private boolean needLimit(String sql, String where, String sqlLimit) {
-        if (where.toLowerCase().contains("id in (")) return true;
-        if (!sqlLimit.equals("")) return true;
+    private boolean needLimit(String sql, String where, AbstractSearchCondition searchCondition) {
+        if (searchCondition.getLimit() != 10) return false;
+        if (where.toLowerCase().contains("id in (")) return false;
+        if (!searchCondition.getSqlLimit().equals("")) return false;
         LogUtil.i("(" + sql + ")\n"
             + "This sql is NOT include (sql in) sentense && not set limit.\n"
             + "Is searchCondition.idList!=null && dio does not use #{searchCondition.foreachIdList} ? \n"
             );
-        return false;
+        return true;
     }
 
     private String getTable(T e) {
