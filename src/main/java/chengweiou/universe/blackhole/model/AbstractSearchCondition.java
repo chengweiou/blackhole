@@ -47,8 +47,11 @@ public abstract class AbstractSearchCondition {
         return "(" + idList.parallelStream().map(e -> "'" + e + "'").collect(Collectors.joining(",")) + ")";
     }
     public String getSqlLimit() {
-        if (limit == 0) return "";
         if (idList != null && !idList.isEmpty()) return "";
+        return getSqlLimit(true);
+    }
+    public String getSqlLimit(boolean pure) {
+        if (limit == 0) return "";
         return " limit " + limit + " offset " + skip + " ";
     }
     public String getOrderBy() {
