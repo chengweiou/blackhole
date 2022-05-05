@@ -51,4 +51,13 @@ public class SearchConditionTest {
         searchCondition = Builder.set("limit", 3).set("skip", 9).to(new TestSearchCondition());
         Assertions.assertEquals(" limit 3 offset 9 ", searchCondition.getSqlLimit());
     }
+
+    @Test
+    public void getSqlLimitIdListNotNull() {
+        // tip: need to check log includes checkLimit0
+        TestSearchCondition searchCondition = Builder.to(new TestSearchCondition());
+        Assertions.assertEquals(" limit 10 offset 0 ", searchCondition.getSqlLimit());
+        searchCondition = Builder.set("idList", Arrays.asList(3)).to(new TestSearchCondition());
+        Assertions.assertEquals("", searchCondition.getSqlLimit());
+    }
 }

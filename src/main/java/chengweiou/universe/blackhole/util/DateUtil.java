@@ -12,6 +12,9 @@ import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 接收到的一律视为utc时间，因为服务器时间与客户端时间不一定匹配
+ */
 public class DateUtil {
     private static List<String> list = Arrays.asList(
         "yyyy-MM-dd'T'HH:mm:ss",

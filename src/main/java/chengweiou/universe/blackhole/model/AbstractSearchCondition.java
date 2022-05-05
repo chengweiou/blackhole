@@ -48,6 +48,7 @@ public abstract class AbstractSearchCondition {
     }
     public String getSqlLimit() {
         if (limit == 0) return "";
+        if (idList != null && !idList.isEmpty()) return "";
         return " limit " + limit + " offset " + skip + " ";
     }
     public String getOrderBy() {

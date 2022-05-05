@@ -138,20 +138,32 @@ public class BaseDaoImpl<T> {
         AbstractSearchCondition searchCondition = (AbstractSearchCondition) map.get("searchCondition");
         T sample = (T) map.get("sample");
         String where = (String) map.get("where");
-        return "select * from " + getTable(sample)
-                + where
-                + searchCondition.getOrderBy() + searchCondition.getSqlLimit()
-            ;
+        String result = "select * from " + getTable(sample)
+                        + where
+                        + searchCondition.getOrderBy() + searchCondition.getSqlLimit();
+        checkLimit0(result, where, searchCondition.getSqlLimit());
+        return result;
     }
 
     public String findId(Map<String, Object> map) {
         AbstractSearchCondition searchCondition = (AbstractSearchCondition) map.get("searchCondition");
         T sample = (T) map.get("sample");
         String where = (String) map.get("where");
-        return "select id from " + getTable(sample)
-                + where
-                + searchCondition.getOrderBy() + searchCondition.getSqlLimit()
-            ;
+        String result = "select * from " + getTable(sample)
+                        + where
+                        + searchCondition.getOrderBy() + searchCondition.getSqlLimit();
+        checkLimit0(result, where, searchCondition.getSqlLimit());
+        return result;
+    }
+
+    private void checkLimit0(String sql, String where, String sqlLimit) {
+        if (where.toLowerCase().contains("id in (")) return;
+        if (!sqlLimit.equals("")) return;
+        LogUtil.i("""
+            (" + sql + ")
+            This sql is NOT include (sql in) sentense && not set limit.
+            Is searchCondition.idList!=null && " + getTable + "Dio does not use #{searchCondition.foreachIdList} ?
+            """);
     }
 
     private String getTable(T e) {
