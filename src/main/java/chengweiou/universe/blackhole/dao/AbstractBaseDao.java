@@ -27,7 +27,6 @@ public interface AbstractBaseDao<Dto extends DtoEntity> {
     Dto findByKey(Dto e);
 
     long count(AbstractSearchCondition searchCondition, Dto sample, String where);
-
     List<Dto> find(AbstractSearchCondition searchCondition, Dto sample, String where);
 
     Long findIdByKey(Dto sample);

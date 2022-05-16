@@ -145,6 +145,12 @@ public class BaseDaoImpl<T> {
         return result;
     }
 
+    public String findIdByKey(T e) {
+        return "select id from " + getTable(e)
+            + " where "
+            + getKeyFieldNameList(e).stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
+    }
+
     public String findId(Map<String, Object> map) {
         AbstractSearchCondition searchCondition = (AbstractSearchCondition) map.get("searchCondition");
         T sample = (T) map.get("sample");
