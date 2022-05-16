@@ -156,6 +156,16 @@ public class BaseDaoImpl<T> {
         return result;
     }
 
+    public String findByIdList(Map<String, Object> map) {
+        T sample = (T) map.get("sample");
+        List<String> idList = (List<String>) map.get("idList");
+        idList = idList.parallelStream().map(e -> e.replaceAll("'", "").replaceAll("\"", "")).distinct().toList();
+        String foreachIdList = "(" + idList.parallelStream().map(e -> "'" + e + "'").collect(Collectors.joining(",")) + ")";
+        String result = "select * from " + getTable(sample)
+                        + " where id in " + foreachIdList;
+        return result;
+    }
+
     private boolean needLimit(String sql, String where, AbstractSearchCondition searchCondition) {
         if (searchCondition.getLimit() != 10) return false; // 被手动设置过limit，不需要
         if (where.toLowerCase().contains("id in (")) return false; // 有 in 查询，不需要

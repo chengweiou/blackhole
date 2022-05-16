@@ -69,6 +69,7 @@ public class LogUtil {
 
     private static void cleanStack(Throwable throwable) {
         // todo 还没处理多个包时跳包的省略号...
+        // todo 删除logUtil的部分
         StackTraceElement[] array = throwable.getStackTrace();
         if (keepList.isEmpty()) {
             return;

@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import chengweiou.universe.blackhole.exception.FailException;
@@ -32,46 +33,63 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         long count = getDao().save(dto);
         if (count != 1) throw new FailException();
         e.setId(dto.getId());
+        BaseDbCache.save(createCacheK(dto.getId()), dto);
     }
 
     public void delete(T e) throws FailException {
         long count = getDao().delete(e.toDto());
         if (count != 1) throw new FailException();
+        BaseDbCache.delete(createCacheK(e.getId()));
     }
     public void deleteByKey(T e) throws FailException {
+        Long id = getDao().findIdByKey(e.toDto());
+        if (id == null) throw new FailException();
         long count = getDao().deleteByKey(e.toDto());
-        if (count != 1) throw new FailException();
+        BaseDbCache.delete(createCacheK(id));
     }
     public void deleteBySample(T e, T sample) throws FailException {
         long count = getDao().deleteBySample(e.toDto(), sample.toDto());
         if (count == 0) throw new FailException();
+        // todo 这个怎么搞
     }
     public void deleteByIdList(List<String> idList) throws FailException {
         long count = getDao().deleteByIdList((Dto) getNull().toDto(), idList);
         if (count != idList.size()) LogUtil.i("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
         if (count == 0) throw new FailException();
+        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }
 
     public long update(T e) {
         e.updateAt();
-        return getDao().update(e.toDto());
+        long count = getDao().updateByKey(e.toDto());
+        BaseDbCache.delete(createCacheK(e.getId()));
+        return count;
     }
     public long updateByKey(T e) {
         e.updateAt();
-        return getDao().updateByKey(e.toDto());
+        Long id = getDao().findIdByKey(e.toDto());
+        long count = getDao().updateByKey(e.toDto());
+        BaseDbCache.delete(createCacheK(id));
+        return count;
     }
     public long updateBySample(T e, T sample) {
         e.updateAt();
+        // todo 这个怎么搞
         return getDao().updateBySample(e.toDto(), sample.toDto());
     }
     public long updateByIdList(T e, List<String> idList) {
         e.updateAt();
-        return getDao().updateByIdList(e.toDto(), idList);
+        long count = getDao().updateByIdList(e.toDto(), idList);
+        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
+        return count;
     }
 
     public T findById(T e) {
+        Dto incache = (Dto) BaseDbCache.get(createCacheK(e.getId()));
+        if (incache != null) return (T) incache.toBean();
         Dto result = (Dto) getDao().findById(e.toDto());
         if (result == null) return (T) getNull();
+        BaseDbCache.save(createCacheK(e.getId()), result);
         return (T) result.toBean();
     }
 
@@ -85,6 +103,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         if (!hasKey(e)) return (T) getNull();
         Dto result = (Dto) getDao().findByKey(e.toDto());
         if (result == null) return (T) getNull();
+        BaseDbCache.save(createCacheK(e.getId()), result);
         return (T) result.toBean();
     }
 
@@ -112,6 +131,9 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         String where = baseFind(searchCondition, dtoSample);
         List<Dto> dtoList = getDao().find(searchCondition, dtoSample, where);
         List<T> result = dtoList.stream().map(e -> (T) e.toBean()).toList();
+        dtoList.stream().forEach(e -> {
+            BaseDbCache.save(createCacheK(e.getId()), e);
+        });
         return result;
     }
 
@@ -133,5 +155,32 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
             LogUtil.e("try to return T.NULL: " + getTClass());
             return null;
         }
+    }
+
+    private String createCacheK(Long id) {
+        return createCacheK(id+"");
+    }
+    private String createCacheK(String id) {
+        return getTClass().getSimpleName() + "Id." + id;
+    }
+
+    /**
+     * 与 find 传递idList不同的是，没有排序，最大化利用缓存，适用于程序内多层级的调用查询
+     * @return
+     */
+    public Map<String, Dto> findMapByIdList(List<String> idList) {
+        Map<String, Object> incacheMap = BaseDbCache.get(idList.stream().map(id -> createCacheK(id)).toList());
+        List<Dto> incacheList = incacheMap.values().stream().map(e -> (Dto)e).toList();
+        Map<String, Dto> result = incacheList.stream().collect(Collectors.toMap(e -> e.getId()+"", e -> e));
+        List<String> leftIdList = idList.stream().filter(id -> !incacheMap.containsKey(createCacheK(id))).toList();
+        if (!leftIdList.isEmpty()) {
+            Dto dtoSample = (Dto) getNull().toDto();
+            List<Dto> leftDtoList = getDao().findByIdList(leftIdList, dtoSample);
+            leftDtoList.stream().forEach(e -> {
+                BaseDbCache.save(createCacheK(e.getId()), e);
+                result.put(e.getId().toString(), e);
+            });
+        }
+        return result;
     }
 }
