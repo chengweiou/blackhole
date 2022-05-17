@@ -92,7 +92,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         if (incache != null) return (T) incache.toBean();
         Dto result = (Dto) getDao().findById(e.toDto());
         if (result == null) return (T) getNull();
-        BaseDbCache.save(createCacheK(e.getId()), result);
+        BaseDbCache.save(createCacheK(result.getId()), result);
         return (T) result.toBean();
     }
 
@@ -106,7 +106,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         if (!hasKey(e)) return (T) getNull();
         Dto result = (Dto) getDao().findByKey(e.toDto());
         if (result == null) return (T) getNull();
-        BaseDbCache.save(createCacheK(e.getId()), result);
+        BaseDbCache.save(createCacheK(result.getId()), result);
         return (T) result.toBean();
     }
 
