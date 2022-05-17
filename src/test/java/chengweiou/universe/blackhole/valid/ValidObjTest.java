@@ -1,15 +1,15 @@
 package chengweiou.universe.blackhole.valid;
 
 
-import chengweiou.universe.blackhole.exception.ParamException;
-import chengweiou.universe.blackhole.model.test.TestEnum;
-import chengweiou.universe.blackhole.param.Valid;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import chengweiou.universe.blackhole.exception.ParamException;
+import chengweiou.universe.blackhole.model.test.TestEnum;
+import chengweiou.universe.blackhole.param.Valid;
 
 
 public class ValidObjTest {

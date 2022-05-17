@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -60,6 +64,24 @@ public class CacheTest {
         BuilderEntity incache = (BuilderEntity) BaseDbCache.get("bbb");
         Assertions.assertEquals(null, incache);
         BaseDbCache.delete("null");
+    }
+
+    @Test
+    public void caffeineExpire() throws InterruptedException {
+        Cache<String, Object> cache = Caffeine.newBuilder().maximumSize(10_000).expireAfterWrite(150, TimeUnit.MILLISECONDS).expireAfterAccess(100, TimeUnit.MILLISECONDS).build();
+        cache.put("aaa", "aaa");
+        cache.put("bbb", "bbb");
+        Thread.sleep(50);
+        Assertions.assertEquals("aaa", cache.get("aaa", key->null));
+        Thread.sleep(50);
+        Assertions.assertEquals("aaa", cache.get("aaa", key->null));
+        Assertions.assertEquals(null, cache.get("bbb", key->null));
+        Thread.sleep(50);
+        Assertions.assertEquals(null, cache.get("aaa", key->null));
+        Thread.sleep(50);
+        Assertions.assertEquals(null, cache.get("aaa", key->null));
+        Thread.sleep(50);
+        Assertions.assertEquals(null, cache.get("aaa", key->null));
     }
 
 }
