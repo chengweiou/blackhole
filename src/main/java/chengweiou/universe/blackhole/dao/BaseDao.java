@@ -13,7 +13,7 @@
 // import chengweiou.universe.blackhole.model.AbstractSearchCondition;
 // import chengweiou.universe.blackhole.model.entity.DtoEntity;
 
-// public interface BaseDao<Dto extends DtoEntity> {
+// public interface BaseDao<Dto extends DtoEntity> extends AbstractBaseDao<Dto> {
 //     @InsertProvider(type = BaseDaoImpl.class, method = "save")
 //     @Options(useGeneratedKeys = true, keyProperty = "id")
 //     long save(Dto e);
@@ -53,7 +53,9 @@
 //     Long findIdByKey(Dto sample);
 //     @SelectProvider(type = BaseDaoImpl.class, method = "findId")
 //     List<String> findId(@Param("searchCondition") AbstractSearchCondition searchCondition, @Param("sample") Dto sample, @Param("where") String where);
+//     @SelectProvider(type = BaseDaoImpl.class, method = "findIdBySample")
+//     List<String> findIdBySample(Dto sample);
 
 //     @SelectProvider(type = BaseDaoImpl.class, method = "findByIdList")
-//     List<Dto> find(@Param("idList") List<String> idList, @Param("sample") Dto sample);
+//     List<Dto> findByIdList(@Param("idList") List<String> idList, @Param("sample") Dto sample);
 // }

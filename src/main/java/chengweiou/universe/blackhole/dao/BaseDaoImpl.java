@@ -151,6 +151,12 @@ public class BaseDaoImpl<T> {
             + getKeyFieldNameList(e).stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and "));
     }
 
+    public String findIdBySample(T e) {
+        return "select id from " + getTable(e)
+            + " where "
+            + getSampleFieldNameList(e).stream().map(name -> name + "=#{"+name+"} ").collect(Collectors.joining(" and "));
+    }
+
     public String findId(Map<String, Object> map) {
         AbstractSearchCondition searchCondition = (AbstractSearchCondition) map.get("searchCondition");
         T sample = (T) map.get("sample");

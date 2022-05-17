@@ -30,6 +30,7 @@ public interface AbstractBaseDao<Dto extends DtoEntity> {
     List<Dto> find(AbstractSearchCondition searchCondition, Dto sample, String where);
 
     Long findIdByKey(Dto sample);
+    List<String> findIdBySample(Dto sample);
     List<String> findId(AbstractSearchCondition searchCondition, Dto sample, String where);
 
     List<Dto> findByIdList(List<String> idList, Dto sample);

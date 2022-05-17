@@ -48,9 +48,10 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         BaseDbCache.delete(createCacheK(id));
     }
     public void deleteBySample(T e, T sample) throws FailException {
+        List<String> idList = getDao().findIdBySample(sample.toDto());
+        if (idList.isEmpty()) throw new FailException();
+        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
         long count = getDao().deleteBySample(e.toDto(), sample.toDto());
-        if (count == 0) throw new FailException();
-        // todo 这个怎么搞
     }
     public void deleteByIdList(List<String> idList) throws FailException {
         long count = getDao().deleteByIdList((Dto) getNull().toDto(), idList);
@@ -61,7 +62,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
 
     public long update(T e) {
         e.updateAt();
-        long count = getDao().updateByKey(e.toDto());
+        long count = getDao().update(e.toDto());
         BaseDbCache.delete(createCacheK(e.getId()));
         return count;
     }
@@ -74,7 +75,9 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
     public long updateBySample(T e, T sample) {
         e.updateAt();
-        // todo 这个怎么搞
+        List<String> idList = getDao().findIdBySample(sample.toDto());
+        if (idList.isEmpty()) return 0;
+        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
         return getDao().updateBySample(e.toDto(), sample.toDto());
     }
     public long updateByIdList(T e, List<String> idList) {

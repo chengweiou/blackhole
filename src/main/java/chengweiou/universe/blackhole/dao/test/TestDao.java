@@ -115,6 +115,14 @@ public class TestDao implements AbstractBaseDao<Dto> {
         return 11L;
     }
 
+
+    @Override
+    public List<String> findIdBySample(Dto sample) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
     @Override
     public List<String> findId(AbstractSearchCondition searchCondition, Dto sample, String where) {
         // TODO Auto-generated method stub
