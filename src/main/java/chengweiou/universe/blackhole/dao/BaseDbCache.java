@@ -9,20 +9,25 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 import chengweiou.universe.blackhole.util.LogUtil;
 
+// todo 如果是不规则的 update，delete（不是基本，没用basedio），然后再findById。如何清除缓存？
 public class BaseDbCache {
     private static final Cache<String, Object> cache = Caffeine.newBuilder().maximumSize(10_000).expireAfterAccess(1, TimeUnit.MINUTES).build();
 
     public static void save(String k, Object v) {
         cache.put(k, v);
+        LogUtil.d("save " + k + " to cache");
     }
     public static void delete(String k) {
         cache.invalidate(k);
+        LogUtil.d("delete " + k + " from cache");
     }
     public static void delete(List<String> kList) {
         cache.invalidateAll(kList);
+        LogUtil.d("delete " + kList + " from cache");
     }
     public static void clear() {
         cache.invalidateAll();
+        LogUtil.d("clear all from cache");
     }
     public static Object get(String k) {
         Object result = cache.get(k, key -> null);
@@ -36,4 +41,3 @@ public class BaseDbCache {
         return result;
     }
 }
-// todo 如果是findbykey，by samele 来更新或者删除的数据，如何清理缓存
