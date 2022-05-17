@@ -2,8 +2,11 @@ package chengweiou.universe.blackhole.dao;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,11 +18,47 @@ import chengweiou.universe.blackhole.model.entity.DtoKey;
 import chengweiou.universe.blackhole.model.entity.ServiceEntity;
 import chengweiou.universe.blackhole.util.LogUtil;
 
+
 public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
-    protected String getDefaultSort() { return "updateAt"; }
-    protected boolean getDefaultSortAz() { return false; }
-    protected abstract Class getTClass();
     protected abstract <Dao extends AbstractBaseDao> Dao getDao();
+    private Class<T> tClass;
+    private T tNull;
+    private String defaultSort = "updateAt";
+    private boolean defaultSortAz = false;
+    private boolean dioCache = true;
+
+    public BaseDio() {
+        setDiocache();
+        setDefaultSort();
+        setTClass();
+    }
+    private void setDiocache() {
+        DioCache dioCacheAnno = this.getClass().getAnnotation(DioCache.class);
+        if (dioCacheAnno != null) dioCache = dioCacheAnno.value();
+    }
+    private void setDefaultSort() {
+        Field[] fieldArray = this.getClass().getDeclaredFields();
+        for (Field field: fieldArray) {
+            if (field.isAnnotationPresent(DioDefaultSort.class)) {
+                DioDefaultSort dioDefaultSortAnno = field.getAnnotation(DioDefaultSort.class);
+                defaultSort = dioDefaultSortAnno.value();
+            } else if (field.isAnnotationPresent(DioDefaultSortAz.class)) {
+                DioDefaultSortAz dioDefaultSortAzAnno = field.getAnnotation(DioDefaultSortAz.class);
+                defaultSortAz = dioDefaultSortAzAnno.value();
+            }
+        }
+    }
+    private void setTClass() {
+        Type type = ((ParameterizedType)(this.getClass().getGenericSuperclass())).getActualTypeArguments()[0];
+        try {
+            tClass = (Class<T>) Class.forName(type.getTypeName());
+            tNull = (T) tClass.getDeclaredField("NULL").get(tClass);
+        } catch (ClassNotFoundException ex) {
+            LogUtil.e("can NOT general t class(" + type + ") in baseDio.", ex);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException ex) {
+            LogUtil.e("try to return T.NULL: " + tClass);
+        }
+    }
 
     public void save(T e) throws FailException {
         if (hasKey(e)) {
@@ -33,66 +72,69 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         long count = getDao().save(dto);
         if (count != 1) throw new FailException();
         e.setId(dto.getId());
-        BaseDbCache.save(createCacheK(dto.getId()), dto);
+        if (dioCache) BaseDioCache.save(createCacheK(dto.getId()), dto);
     }
 
     public void delete(T e) throws FailException {
         long count = getDao().delete(e.toDto());
         if (count != 1) throw new FailException();
-        BaseDbCache.delete(createCacheK(e.getId()));
+        if (dioCache) BaseDioCache.delete(createCacheK(e.getId()));
     }
     public void deleteByKey(T e) throws FailException {
         Long id = getDao().findIdByKey(e.toDto());
         if (id == null) throw new FailException();
         long count = getDao().deleteByKey(e.toDto());
-        BaseDbCache.delete(createCacheK(id));
+        if (dioCache) BaseDioCache.delete(createCacheK(id));
     }
     public void deleteBySample(T e, T sample) throws FailException {
         List<String> idList = getDao().findIdBySample(sample.toDto());
         if (idList.isEmpty()) throw new FailException();
-        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
         long count = getDao().deleteBySample(e.toDto(), sample.toDto());
+        if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }
     public void deleteByIdList(List<String> idList) throws FailException {
-        long count = getDao().deleteByIdList((Dto) getNull().toDto(), idList);
+        long count = getDao().deleteByIdList((Dto) tNull.toDto(), idList);
         if (count != idList.size()) LogUtil.i("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
         if (count == 0) throw new FailException();
-        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
+        if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }
 
     public long update(T e) {
         e.updateAt();
         long count = getDao().update(e.toDto());
-        BaseDbCache.delete(createCacheK(e.getId()));
+        if (dioCache) BaseDioCache.delete(createCacheK(e.getId()));
         return count;
     }
     public long updateByKey(T e) {
         e.updateAt();
         Long id = getDao().findIdByKey(e.toDto());
         long count = getDao().updateByKey(e.toDto());
-        BaseDbCache.delete(createCacheK(id));
+        if (dioCache) BaseDioCache.delete(createCacheK(id));
         return count;
     }
     public long updateBySample(T e, T sample) {
         e.updateAt();
         List<String> idList = getDao().findIdBySample(sample.toDto());
         if (idList.isEmpty()) return 0;
-        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
-        return getDao().updateBySample(e.toDto(), sample.toDto());
+        long count = getDao().updateBySample(e.toDto(), sample.toDto());
+        if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
+        return count;
     }
     public long updateByIdList(T e, List<String> idList) {
         e.updateAt();
         long count = getDao().updateByIdList(e.toDto(), idList);
-        BaseDbCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
+        if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
         return count;
     }
 
     public T findById(T e) {
-        Dto incache = (Dto) BaseDbCache.get(createCacheK(e.getId()));
-        if (incache != null) return (T) incache.toBean();
+        if (dioCache) {
+            Dto incache = (Dto) BaseDioCache.get(createCacheK(e.getId()));
+            if (incache != null) return (T) incache.toBean();
+        }
         Dto result = (Dto) getDao().findById(e.toDto());
-        if (result == null) return (T) getNull();
-        BaseDbCache.save(createCacheK(result.getId()), result);
+        if (result == null) return (T) tNull;
+        if (dioCache) BaseDioCache.save(createCacheK(result.getId()), result);
         return (T) result.toBean();
     }
 
@@ -103,10 +145,10 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
 
     public T findByKey(T e) {
-        if (!hasKey(e)) return (T) getNull();
+        if (!hasKey(e)) return (T) tNull;
         Dto result = (Dto) getDao().findByKey(e.toDto());
-        if (result == null) return (T) getNull();
-        BaseDbCache.save(createCacheK(result.getId()), result);
+        if (result == null) return (T) tNull;
+        if (dioCache) BaseDioCache.save(createCacheK(result.getId()), result);
         return (T) result.toBean();
     }
 
@@ -121,29 +163,32 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
 
     public long count(AbstractSearchCondition searchCondition, T sample) {
         if (searchCondition.getIdList() != null && searchCondition.getIdList().isEmpty()) return 0;
-        Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
+        Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) tNull.toDto();
         String where = baseFind(searchCondition, dtoSample);
         return getDao().count(searchCondition, dtoSample, where);
     }
 
     public List<T> find(AbstractSearchCondition searchCondition, T sample) {
         if (searchCondition.getIdList() != null && searchCondition.getIdList().isEmpty()) return Collections.emptyList();
-        searchCondition.setDefaultSort(getDefaultSort());
-        searchCondition.setDefaultSortAz(getDefaultSortAz());
-        Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
+        searchCondition.setDefaultSort(defaultSort);
+        searchCondition.setDefaultSortAz(defaultSortAz);
+        Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) tNull.toDto();
         String where = baseFind(searchCondition, dtoSample);
         List<Dto> dtoList = getDao().find(searchCondition, dtoSample, where);
         List<T> result = dtoList.stream().map(e -> (T) e.toBean()).toList();
-        dtoList.stream().forEach(e -> {
-            BaseDbCache.save(createCacheK(e.getId()), e);
-        });
+        if (dioCache) {
+            dtoList.stream().forEach(e -> {
+                BaseDioCache.save(createCacheK(e.getId()), e);
+            });
+        }
+
         return result;
     }
 
     public List<String> findId(AbstractSearchCondition searchCondition, T sample) {
-        searchCondition.setDefaultSort(getDefaultSort());
-        searchCondition.setDefaultSortAz(getDefaultSortAz());
-        Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) getNull().toDto();
+        searchCondition.setDefaultSort(defaultSort);
+        searchCondition.setDefaultSortAz(defaultSortAz);
+        Dto dtoSample = sample!=null ? (Dto) sample.toDto() : (Dto) tNull.toDto();
         String where = baseFind(searchCondition, dtoSample);
         List<String> result = getDao().findId(searchCondition, dtoSample, where);
         return result;
@@ -151,39 +196,42 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
 
     protected abstract String baseFind(AbstractSearchCondition searchCondition, Dto sample);
 
-    private T getNull() {
-        try {
-            return (T) getTClass().getDeclaredField("NULL").get(getTClass());
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            LogUtil.e("try to return T.NULL: " + getTClass());
-            return null;
-        }
-    }
+    // private T tNull {
+    //     try {
+    //         return (T) tClass.getDeclaredField("NULL").get(tClass);
+    //     } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+    //         LogUtil.e("try to return T.NULL: " + tClass);
+    //         return null;
+    //     }
+    // }
 
-    private String createCacheK(Long id) {
-        return createCacheK(id+"");
-    }
-    private String createCacheK(String id) {
-        return getTClass().getSimpleName() + "Id." + id;
-    }
+
 
     /**
      * 与 find 传递idList不同的是，没有排序，最大化利用缓存，适用于程序内多层级的调用查询
      * @return
      */
     public Map<String, Dto> findMapByIdList(List<String> idList) {
-        Map<String, Object> incacheMap = BaseDbCache.get(idList.stream().map(id -> createCacheK(id)).toList());
+        Map<String, Object> incacheMap = dioCache ? BaseDioCache.get(idList.stream().map(id -> createCacheK(id)).toList()) : new HashMap<>();
         List<Dto> incacheList = incacheMap.values().stream().map(e -> (Dto)e).toList();
         Map<String, Dto> result = incacheList.stream().collect(Collectors.toMap(e -> e.getId()+"", e -> e));
         List<String> leftIdList = idList.stream().filter(id -> !incacheMap.containsKey(createCacheK(id))).toList();
         if (!leftIdList.isEmpty()) {
-            Dto dtoSample = (Dto) getNull().toDto();
+            Dto dtoSample = (Dto) tNull.toDto();
             List<Dto> leftDtoList = getDao().findByIdList(leftIdList, dtoSample);
             leftDtoList.stream().forEach(e -> {
-                BaseDbCache.save(createCacheK(e.getId()), e);
+                if (dioCache) BaseDioCache.save(createCacheK(e.getId()), e);
                 result.put(e.getId().toString(), e);
             });
         }
         return result;
     }
+
+    private String createCacheK(Long id) {
+        return createCacheK(id+"");
+    }
+    private String createCacheK(String id) {
+        return tClass.getSimpleName() + "Id." + id;
+    }
+
 }

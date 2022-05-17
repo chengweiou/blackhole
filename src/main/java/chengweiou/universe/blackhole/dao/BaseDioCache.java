@@ -10,7 +10,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import chengweiou.universe.blackhole.util.LogUtil;
 
 // todo 如果是不规则的 update，delete（不是基本，没用basedio），然后再findById。如何清除缓存？
-public class BaseDbCache {
+public class BaseDioCache {
     private static final Cache<String, Object> cache = Caffeine.newBuilder().maximumSize(10_000)
         .expireAfterWrite(3, TimeUnit.MINUTES) // 无论如何，最多 3min 就会过期
         .expireAfterAccess(1, TimeUnit.MINUTES).build(); // 每次使用加 1min，但不会超过上面的3min

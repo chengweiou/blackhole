@@ -51,6 +51,6 @@ public class BaseDioTest {
     public void reset() {
         TestDao dao = new TestDao();
         dio.setDao(dao);
-        BaseDbCache.clear();
+        BaseDioCache.clear();
     }
 }
