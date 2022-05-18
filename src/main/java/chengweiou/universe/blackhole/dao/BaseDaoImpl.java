@@ -180,7 +180,7 @@ public class BaseDaoImpl<T> {
 
     private boolean needLimit(String sql, String where, AbstractSearchCondition searchCondition) {
         if (searchCondition.getLimit() != 10) return false; // 被手动设置过limit，不需要
-        if (where.toLowerCase().contains("id in (")) return false; // 有 in 查询，不需要
+        if (where.toLowerCase().contains("id in ")) return false; // 有 in 查询，不需要
         if (!searchCondition.getSqlLimit().equals("")) return false; // 已有limit，不需要
         LogUtil.i("(" + sql + ")\n"
             + "This sql is NOT include (sql in) sentense && not set limit.\n"

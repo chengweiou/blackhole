@@ -19,6 +19,10 @@ import chengweiou.universe.blackhole.model.entity.ServiceEntity;
 import chengweiou.universe.blackhole.util.LogUtil;
 
 
+/**
+ * @DioCache(false) 类上方注解，用于禁止该 basedio 使用缓存
+ * @DioDefaultSort("aaa") @DioDefaultSortAz(true) 属性上方注解，用于变更默认排序. 属性名随意 private boolean defaultSortAz;
+ */
 public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     protected abstract <Dao extends AbstractBaseDao> Dao getDao();
     private Class<T> tClass;
@@ -93,6 +97,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }
     public void deleteByIdList(List<String> idList) throws FailException {
+        if (idList.isEmpty())  throw new FailException("idList is empty");
         long count = getDao().deleteByIdList((Dto) tNull.toDto(), idList);
         if (count != idList.size()) LogUtil.i("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
         if (count == 0) throw new FailException();
@@ -195,17 +200,6 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
 
     protected abstract String baseFind(AbstractSearchCondition searchCondition, Dto sample);
-
-    // private T tNull {
-    //     try {
-    //         return (T) tClass.getDeclaredField("NULL").get(tClass);
-    //     } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-    //         LogUtil.e("try to return T.NULL: " + tClass);
-    //         return null;
-    //     }
-    // }
-
-
 
     /**
      * 与 find 传递idList不同的是，没有排序，最大化利用缓存，适用于程序内多层级的调用查询
