@@ -118,6 +118,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     public long updateByKey(T e) throws FailException {
         e.updateAt();
         Long id = getDao().findIdByKey(e.toDto());
+        e.setId(id);
         long count = getDao().updateByKey(e.toDto());
         if (dioCache) BaseDioCache.delete(createCacheK(id));
         return count;
@@ -157,6 +158,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
      * 如果没传入key， 异常
      * key 已存在： updateByKey， key不存在：save
      * 请不要与 save， update 同时使用
+     * 不会更新 dtoKey 的部分
      * @param e
      * @return success count
      * @throws FailException
