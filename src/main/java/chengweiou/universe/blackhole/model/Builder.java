@@ -99,28 +99,20 @@ public class Builder {
                 } catch (IllegalAccessException | InvocationTargetException ex) {
                     LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
                 } catch (IllegalArgumentException ex) {
-                    Object obj;
                     try {
-                        switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
-                            case "int":
-                            case "java.lang.Integer":
-                                obj = new BigDecimal(e.getValue() + "").setScale(0, RoundingMode.HALF_UP).intValueExact(); break;
-                            case "java.lang.String":
+                        Object obj = switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
+                            case "int", "java.lang.Integer" -> new BigDecimal(e.getValue() + "").setScale(0, RoundingMode.HALF_UP).intValueExact();
+                            case "java.lang.String" -> {
                                 if (e.getValue() instanceof LocalDateTime) {
-                                    obj = ((LocalDateTime) e.getValue()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); break;
+                                    yield ((LocalDateTime) e.getValue()).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                                 }
-                                obj = e.getValue().toString(); break;
-                            case "java.time.LocalDate":
-                                obj = DateUtil.toDate(e.getValue().toString()); break;
-                            case "java.time.LocalDateTime":
-                                obj = DateUtil.toDateTime(e.getValue().toString()); break;
-                            case "java.time.Instant":
-                                obj = DateUtil.toInstant(e.getValue().toString()); break;
-
-                            default:
-                                obj = methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());
-                                break;
-                        }
+                                yield e.getValue().toString();
+                            }
+                            case "java.time.LocalDate" -> DateUtil.toDate(e.getValue().toString());
+                            case "java.time.LocalDateTime" -> DateUtil.toDateTime(e.getValue().toString());
+                            case "java.time.Instant" -> DateUtil.toInstant(e.getValue().toString());
+                            default -> methodMap.get(methodName).getParameterTypes()[0].getMethod("valueOf", String.class).invoke(null, e.getValue().toString());
+                        };
                         methodMap.get(methodName).invoke(instance, obj);
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ParseException exception) {
                         LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");

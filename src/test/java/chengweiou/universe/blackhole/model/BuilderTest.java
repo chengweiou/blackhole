@@ -1,9 +1,10 @@
 package chengweiou.universe.blackhole.model;
 
 
-import chengweiou.universe.blackhole.model.test.BuilderEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import chengweiou.universe.blackhole.model.test.BuilderEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

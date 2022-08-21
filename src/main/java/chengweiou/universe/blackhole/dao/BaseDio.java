@@ -66,7 +66,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
 
     public void save(T e) throws FailException {
         if (hasKey(e)) {
-            long count = getDao().countByKey(e.toDto());
+            long count = getDao().countByKeyCheckExist(e.toDto());
             if (count == 1) throw new FailException("same data exists");
         }
         e.fillNotRequire();
@@ -97,27 +97,31 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }
     public void deleteByIdList(List<String> idList) throws FailException {
-        if (idList.isEmpty())  throw new FailException("idList is empty");
+        if (idList.isEmpty()) throw new FailException("idList is empty");
         long count = getDao().deleteByIdList((Dto) tNull.toDto(), idList);
         if (count != idList.size()) LogUtil.i("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
         if (count == 0) throw new FailException();
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }
 
-    public long update(T e) {
+    public long update(T e) throws FailException {
+        if (hasKey(e)) {
+            long count = getDao().countByKeyCheckExist(e.toDto());
+            if (count != 0) throw new FailException("key exists: " + e.toDto().toString());
+        }
         e.updateAt();
         long count = getDao().update(e.toDto());
         if (dioCache) BaseDioCache.delete(createCacheK(e.getId()));
         return count;
     }
-    public long updateByKey(T e) {
+    public long updateByKey(T e) throws FailException {
         e.updateAt();
         Long id = getDao().findIdByKey(e.toDto());
         long count = getDao().updateByKey(e.toDto());
         if (dioCache) BaseDioCache.delete(createCacheK(id));
         return count;
     }
-    public long updateBySample(T e, T sample) {
+    public long updateBySample(T e, T sample) throws FailException {
         e.updateAt();
         List<String> idList = getDao().findIdBySample(sample.toDto());
         if (idList.isEmpty()) return 0;
@@ -125,7 +129,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
         return count;
     }
-    public long updateByIdList(T e, List<String> idList) {
+    public long updateByIdList(T e, List<String> idList) throws FailException {
         e.updateAt();
         long count = getDao().updateByIdList(e.toDto(), idList);
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
@@ -157,13 +161,16 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         return (T) result.toBean();
     }
 
+    public long countByKeyCheckExist(T e) {
+        if (!hasKey(e)) return 0;
+        long count = getDao().countByKeyCheckExist(e.toDto());
+        return count;
+    }
+
     private boolean hasKey(T e) {
         DtoEntity dto = e.toDto();
-        List<String> fieldNameList = Arrays.asList(dto.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
-            .filter(field -> field.isAnnotationPresent(DtoKey.class))
-            .map(Field::getName)
-            .toList();
-        return !fieldNameList.isEmpty();
+        return Arrays.asList(dto.getClass().getDeclaredFields()).stream().filter(field -> !Modifier.isStatic(field.getModifiers()))
+            .anyMatch(field -> field.isAnnotationPresent(DtoKey.class));
     }
 
     public long count(AbstractSearchCondition searchCondition, T sample) {

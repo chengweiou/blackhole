@@ -17,9 +17,10 @@ import chengweiou.universe.blackhole.exception.FailException;
 import chengweiou.universe.blackhole.model.Builder;
 
 
-public class BaseDioTest {
+public class BaseDioTestForCheckExists {
     private TestBaseDio dio = new TestBaseDio();
 
+    // todo add test for basedio
     @Test
     public void findByIdList() throws FailException {
         List<String> idList = Arrays.asList("1","11");

@@ -1,5 +1,6 @@
 package chengweiou.universe.blackhole.dao.test;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -9,18 +10,17 @@ import chengweiou.universe.blackhole.dao.test.TestServiceEntity.Dto;
 import chengweiou.universe.blackhole.model.AbstractSearchCondition;
 import chengweiou.universe.blackhole.model.Builder;
 
-public class TestDao implements AbstractBaseDao<Dto> {
-    List<Dto> fakeDbList = Arrays.asList(
-        Builder.set("id", "11").set("name", "name11").to(new Dto()),
-        Builder.set("id", "12").set("name", "name12").to(new Dto()),
-        Builder.set("id", "13").set("name", "name13").to(new Dto())
-    );
+public class TestBaseDao implements AbstractBaseDao<Dto> {
+    public TestBaseDao() {
+        reset();
+    }
 
+    List<Dto> fakeDbList = List.of();
     public void reset() {
-        fakeDbList = Arrays.asList(
-            Builder.set("id", "11").set("name", "name11").to(new Dto()),
-            Builder.set("id", "12").set("name", "name12").to(new Dto()),
-            Builder.set("id", "13").set("name", "name13").to(new Dto())
+        fakeDbList = List.of(
+            Builder.set("id", "11").set("name", "name11").set("dtoKey1", "1").set("dtoKey2", "2").set("dtoKey3", "3").set("dtoKey4", "4").set("dtoKey5", "5").set("dtoKey6", "6").set("dtoKey7", "7").set("dtoKey8", "8").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto()),
+            Builder.set("id", "12").set("name", "name12").set("dtoKey1", "1").set("dtoKey2", "2").set("dtoKey3", "3").set("dtoKey4", "4").set("dtoKey5", "5").set("dtoKey6", "6").set("dtoKey7", "7").set("dtoKey8", "8").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto()),
+            Builder.set("id", "13").set("name", "name13").set("dtoKey1", "1").set("dtoKey2", "2").set("dtoKey3", "3").set("dtoKey4", "4").set("dtoKey5", "5").set("dtoKey6", "6").set("dtoKey7", "7").set("dtoKey8", "8").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto())
         );
     }
 
@@ -96,6 +96,13 @@ public class TestDao implements AbstractBaseDao<Dto> {
     public Dto findByKey(Dto e) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+
+    @Override
+    public long countByKeyCheckExist(Dto e) {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
     @Override

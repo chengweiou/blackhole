@@ -3,6 +3,7 @@ package chengweiou.universe.blackhole.util;
 
 import chengweiou.universe.blackhole.model.Builder;
 import chengweiou.universe.blackhole.model.test.BuilderEntity;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

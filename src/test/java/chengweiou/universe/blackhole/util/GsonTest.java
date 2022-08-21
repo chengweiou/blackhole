@@ -3,7 +3,6 @@ package chengweiou.universe.blackhole.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import chengweiou.universe.blackhole.model.Builder;
 import chengweiou.universe.blackhole.model.test.BuilderEntity;
 
