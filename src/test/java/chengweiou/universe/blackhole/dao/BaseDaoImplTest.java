@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import chengweiou.universe.blackhole.dao.test.TestServiceEntity.Dto;
+import chengweiou.universe.blackhole.exception.FailException;
 import chengweiou.universe.blackhole.model.Builder;
 import chengweiou.universe.blackhole.model.test.BuilderEntity;
 
@@ -70,6 +71,18 @@ public class BaseDaoImplTest {
         Assertions.assertEquals(expectSql, sql);
     }
 
+    private static Stream<Arguments> deleteByKeyFailParam() {
+        return Stream.of(
+            Arguments.of(noKeyEntity),
+            Arguments.of(noSuccessKeyEntity)
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("deleteByKeyFailParam")
+    void deleteByKeyFail(final Dto e) {
+        Assertions.assertThrows(NullPointerException.class, () -> baseDaoImpl.deleteByKey(e));
+    }
+
     private static Stream<Arguments> updateParam() {
         return Stream.of(
             Arguments.of(allPropEntity, "update testServiceEntity set name=#{name}, dtoKey1=#{dtoKey1}, dtoKey2=#{dtoKey2}, dtoKey3=#{dtoKey3}, dtoKey4=#{dtoKey4}, dtoKey5=#{dtoKey5}, dtoKey6=#{dtoKey6}, dtoKey7=#{dtoKey7}, dtoKey8=#{dtoKey8}, prop1=#{prop1}, prop2=#{prop2}, updateAt=#{updateAt} where id=#{id}"),
@@ -104,6 +117,18 @@ public class BaseDaoImplTest {
     void updateByKey(final Dto e, final String expectSql) {
         String sql = baseDaoImpl.updateByKey(e);
         Assertions.assertEquals(expectSql, sql);
+    }
+
+    private static Stream<Arguments> updateByKeyFailParam() {
+        return Stream.of(
+            Arguments.of(noKeyEntity),
+            Arguments.of(noSuccessKeyEntity)
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("updateByKeyFailParam")
+    void updateByKeyFail(final Dto e) {
+        Assertions.assertThrows(NullPointerException.class, () -> baseDaoImpl.updateByKey(e));
     }
 
     private static Stream<Arguments> findByKeyParam() {
