@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import chengweiou.universe.blackhole.exception.FailException;
 import chengweiou.universe.blackhole.model.AbstractSearchCondition;
+import chengweiou.universe.blackhole.model.Builder;
 import chengweiou.universe.blackhole.model.entity.DtoEntity;
 import chengweiou.universe.blackhole.model.entity.DtoKey;
 import chengweiou.universe.blackhole.model.entity.ServiceEntity;
@@ -134,6 +135,41 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
         long count = getDao().updateByIdList(e.toDto(), idList);
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
         return count;
+    }
+
+    /**
+     * 如果有id：update， 没有id：save
+     * 请不要与 save， update 同时使用
+     * @param e
+     * @return success count
+     * @throws FailException
+     */
+    public long saveOrUpdate(T e) throws FailException {
+        if (e.getId() == null) {
+            save(e);
+            return 1;
+        } else {
+            return update(e);
+        }
+    }
+
+    /**
+     * 如果没传入key， 异常
+     * key 已存在： updateByKey， key不存在：save
+     * 请不要与 save， update 同时使用
+     * @param e
+     * @return success count
+     * @throws FailException
+     */
+    public long saveOrUpdateByKey(T e) throws FailException {
+        if (!hasKey(e)) throw new FailException("key NOT exists: " + e.toDto().toString());
+        long count = getDao().countByKey(e.toDto());
+        if (count == 0) {
+            save(e);
+            return 1;
+        } else {
+            return updateByKey(e);
+        }
     }
 
     public T findById(T e) {
