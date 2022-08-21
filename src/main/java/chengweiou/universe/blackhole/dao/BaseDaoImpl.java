@@ -142,6 +142,7 @@ public class BaseDaoImpl<T> {
             LogUtil.i("entity " + e.getClass() + " 没有 id ");
         }
         Map<String, List<String>> successGroupMap = getAllHasValueKeyMap(e);
+        if (successGroupMap.isEmpty()) return "select 0"; // todo 这里内部跑了异常
         String keyWhere = successGroupMap.entrySet().stream()
             .collect(Collectors.toMap(entry->entry.getKey(), entry->entry.getValue().stream().map(name -> name+"=#{"+name+"}").collect(Collectors.joining(" and ", "(", ")"))))
             .values().stream().collect(Collectors.joining(" or ", "(", ")"))
@@ -250,17 +251,18 @@ public class BaseDaoImpl<T> {
     /**
      * 获取其中一个有值的 dtoKey 组，如果有多个组，只获取第一个成功的。一个组已经能确认一个唯一用户
      * @param e
-     * @return
+     * @return 如果 没有成功获取 完整的一组，抛 nullpointer 异常
      */
     private List<String> getOneHasValueKeyList(T e) {
         Map<String, List<String>> successGroupMap = getAllHasValueKeyMap(e);
+        if (successGroupMap.isEmpty()) throw new NullPointerException("can not find a group of key field is NOT all null: " + getTable(e) + ". Please check code");
         return successGroupMap.values().stream().findFirst().orElse(Collections.emptyList());
     }
 
     /**
      * 获取全部有值的 dtoKey 组, 一个 dtoKey 组的成员全部有值，才成功获取
      * @param e
-     * @return
+     * @return 如果 没有成功获取 完整的一组，返回空集合
      */
     private Map<String, List<String>> getAllHasValueKeyMap(T e) {
         List<DtoProp> dtoPropList = getKeyDtoPropList(e);
@@ -268,7 +270,7 @@ public class BaseDaoImpl<T> {
         List<String> successGroupList = groupMap.entrySet().stream()
             .map(entrySet -> entrySet.getValue().stream().reduce(new DtoProp("", null, true), (a,b)-> new DtoProp(b.getGroup(), null, a.getV()!=null&&b.getV()!=null)))
             .filter(dtoProp->(Boolean)(dtoProp.getV())).map(dtoProp->dtoProp.getGroup()).toList();
-        if (successGroupList.isEmpty()) throw new NullPointerException("can not find a group of key field is NOT all null: " + getTable(e) + ". Please check code");
+        if (successGroupList.isEmpty()) return Map.of();
         return successGroupList.stream().collect(Collectors.toMap(group->group, group->groupMap.get(group).stream().map(DtoProp::getField).toList()));
     }
 

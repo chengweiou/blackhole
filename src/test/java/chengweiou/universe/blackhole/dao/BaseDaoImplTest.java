@@ -28,6 +28,8 @@ public class BaseDaoImplTest {
     private static final Dto oneSingleEntity = Builder.set("name", "n").set("dtoKey3", "3").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
     private static final Dto twoSingleEntity = Builder.set("name", "n").set("dtoKey3", "3").set("dtoKey4", "4").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
     private static final Dto oneBasicEntity = Builder.set("name", "n").set("dtoKey1", "1").set("dtoKey2", "2").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
+    private static final Dto noSuccessKeyEntity = Builder.set("name", "n").set("dtoKey5", "5").set("createAt", Instant.now()).set("updateAt", Instant.now()).set("id", "1").to(new Dto());
+    private static final Dto noKeyEntity = Builder.set("name", "n").set("createAt", Instant.now()).set("updateAt", Instant.now()).set("id", "1").to(new Dto());
 
     private static Stream<Arguments> saveParam() {
         return Stream.of(
@@ -75,7 +77,9 @@ public class BaseDaoImplTest {
             Arguments.of(withEmptyGroupEntity, "update testServiceEntity set name=#{name}, dtoKey1=#{dtoKey1}, dtoKey2=#{dtoKey2}, dtoKey3=#{dtoKey3}, dtoKey4=#{dtoKey4}, dtoKey7=#{dtoKey7}, dtoKey8=#{dtoKey8}, prop1=#{prop1}, prop2=#{prop2}, updateAt=#{updateAt} where id=#{id}"),
             Arguments.of(oneSingleEntity, "update testServiceEntity set name=#{name}, dtoKey3=#{dtoKey3}, prop1=#{prop1}, prop2=#{prop2}, updateAt=#{updateAt} where id=#{id}"),
             Arguments.of(twoSingleEntity, "update testServiceEntity set name=#{name}, dtoKey3=#{dtoKey3}, dtoKey4=#{dtoKey4}, prop1=#{prop1}, prop2=#{prop2}, updateAt=#{updateAt} where id=#{id}"),
-            Arguments.of(oneBasicEntity, "update testServiceEntity set name=#{name}, dtoKey1=#{dtoKey1}, dtoKey2=#{dtoKey2}, prop1=#{prop1}, prop2=#{prop2}, updateAt=#{updateAt} where id=#{id}")
+            Arguments.of(oneBasicEntity, "update testServiceEntity set name=#{name}, dtoKey1=#{dtoKey1}, dtoKey2=#{dtoKey2}, prop1=#{prop1}, prop2=#{prop2}, updateAt=#{updateAt} where id=#{id}"),
+            Arguments.of(noSuccessKeyEntity, "update testServiceEntity set name=#{name}, dtoKey5=#{dtoKey5}, updateAt=#{updateAt} where id=#{id}"),
+            Arguments.of(noKeyEntity, "update testServiceEntity set name=#{name}, updateAt=#{updateAt} where id=#{id}")
         );
     }
     @ParameterizedTest
@@ -127,7 +131,9 @@ public class BaseDaoImplTest {
             Arguments.of(withEmptyGroupEntity, "select count(*) from testServiceEntity where ((dtoKey7=#{dtoKey7} and dtoKey8=#{dtoKey8}) or (dtoKey4=#{dtoKey4}) or (dtoKey3=#{dtoKey3}) or (dtoKey1=#{dtoKey1} and dtoKey2=#{dtoKey2}))"),
             Arguments.of(oneSingleEntity, "select count(*) from testServiceEntity where ((dtoKey3=#{dtoKey3}))"),
             Arguments.of(twoSingleEntity, "select count(*) from testServiceEntity where ((dtoKey4=#{dtoKey4}) or (dtoKey3=#{dtoKey3}))"),
-            Arguments.of(oneBasicEntity, "select count(*) from testServiceEntity where ((dtoKey1=#{dtoKey1} and dtoKey2=#{dtoKey2}))")
+            Arguments.of(oneBasicEntity, "select count(*) from testServiceEntity where ((dtoKey1=#{dtoKey1} and dtoKey2=#{dtoKey2}))"),
+            Arguments.of(noSuccessKeyEntity, "select 0"),
+            Arguments.of(noKeyEntity, "select 0")
         );
     }
     @ParameterizedTest
