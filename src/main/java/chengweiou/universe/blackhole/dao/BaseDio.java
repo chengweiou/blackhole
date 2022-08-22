@@ -66,13 +66,13 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
 
     public void save(T e) throws FailException {
+        e.fillNotRequire();
+        e.createAt();
+        e.updateAt();
         if (hasKey(e)) {
             long count = getDao().countByKeyCheckExist(e.toDto());
             if (count == 1) throw new FailException("same data exists");
         }
-        e.fillNotRequire();
-        e.createAt();
-        e.updateAt();
         DtoEntity dto = e.toDto();
         long count = getDao().save(dto);
         if (count != 1) throw new FailException();
@@ -106,11 +106,11 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     }
 
     public long update(T e) throws FailException {
+        e.updateAt();
         if (hasKey(e)) {
             long count = getDao().countByKeyCheckExist(e.toDto());
             if (count != 0) throw new FailException("key exists: " + e.toDto().toString());
         }
-        e.updateAt();
         long count = getDao().update(e.toDto());
         if (dioCache) BaseDioCache.delete(createCacheK(e.getId()));
         return count;
@@ -165,6 +165,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
      */
     public long saveOrUpdateByKey(T e) throws FailException {
         if (!hasKey(e)) throw new FailException("key NOT exists: " + e.toDto().toString());
+        e.fillNotRequire();
         long count = getDao().countByKey(e.toDto());
         if (count == 0) {
             save(e);
