@@ -21,7 +21,7 @@ public class LogTest {
                 .set("objectType", Builder.set("stringType", "inner string").to(new BuilderEntity()))
                 .to(new BuilderEntity());
         LogUtil.d("debug name", e);
-        LogUtil.d("debug name", new NullPointerException("laaaaaalaa"));
+        LogUtil.d("debug name", new AssertionError("laaaaaalaa"));
     }
     @Test
     public void i() {
@@ -35,12 +35,12 @@ public class LogTest {
                 .set("objectType", Builder.set("stringType", "inner string").to(new BuilderEntity()))
                 .to(new BuilderEntity());
         LogUtil.i("info name", e);
-        LogUtil.i("info name", new NullPointerException("laaaaaalaa"));
+        LogUtil.i("info name", new AssertionError("laaaaaalaa"));
     }
     @Test
     public void e() {
         LogUtil.e("error name");
-        LogUtil.e("error name", new NullPointerException("laaaaaalaa"));
+        LogUtil.e("error name", new AssertionError("laaaaaalaa"));
     }
 
     @BeforeAll

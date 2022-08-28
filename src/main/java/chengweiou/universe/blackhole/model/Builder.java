@@ -58,7 +58,7 @@ public class Builder {
          * @param c
          * @param <T>
          * @return
-         * throw nullPointException
+         * throw assertionError
          *      if class does not have a no param constructor
          *      if class does not have setter method for a prop
          */
@@ -68,7 +68,7 @@ public class Builder {
                 result = (T) c.getConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 LogUtil.e("builder set property fail! " + c + " needs a no param constructor", e);
-                throw new NullPointerException("builder set property fail! \" + c + \" needs a no param constructor");
+                throw new AssertionError("builder set property fail! \" + c + \" needs a no param constructor");
             }
             setProp(c, result);
             return result;
@@ -78,7 +78,7 @@ public class Builder {
          * @param instance
          * @param <T>
          * @return
-         * throw nullPointException
+         * throw assertionError
          *      if class does not have a no param constructor
          *      if class does not have setter method for a prop
          */
@@ -93,8 +93,8 @@ public class Builder {
             Map<String, Method> methodMap = methodList.stream().collect(Collectors.toMap(Method::getName, e -> e));
             map.entrySet().stream().forEach(e -> {
                 String methodName = "set" + e.getKey().substring(0, 1).toUpperCase() + e.getKey().substring(1);
+                if (!methodMap.containsKey(methodName)) throw new AssertionError("builder set property fail! try to call method: "+methodName+", not found!");
                 try {
-                    // todo 这里回报空指针，如果没有该属性
                     methodMap.get(methodName).invoke(instance, e.getValue());
                 } catch (IllegalAccessException | InvocationTargetException ex) {
                     LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");

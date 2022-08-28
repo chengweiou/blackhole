@@ -15,9 +15,16 @@ public @interface DtoKey {
      */
     boolean single() default false;
     /**
+     * 目前只适用于 string
+     * true: can be empty string, when empty, will not check exisit. if empty inside a group, then the whole group for this column will not be a key.
+     * false:
+     * @return
+     */
+    boolean canEmpty() default false;
+    /**
      * will valid properties within a same group name. if more than one group. will need to valid properties in the same group are unique
      * every group can identify a unique entity. usually one group is enough. more group just have more way to identify it. like: phone and email can be two single group
-     * do NOT use noGroup, successGroup, basicGroup as custom group name
+     * do NOT use noGroup, basicGroup as custom group name
      * @return
      */
     String group() default "basicGroup";

@@ -28,7 +28,9 @@ public class BaseDaoImplTest {
     private static final Dto withEmptyGroupEntity = Builder.set("name", "n").set("dtoKey1", "1").set("dtoKey2", "2").set("dtoKey3", "3").set("dtoKey4", "4").set("dtoKey7", "7").set("dtoKey8", "8").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
     private static final Dto oneSingleEntity = Builder.set("name", "n").set("dtoKey3", "3").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
     private static final Dto twoSingleEntity = Builder.set("name", "n").set("dtoKey3", "3").set("dtoKey4", "4").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
+    private static final Dto twoSingleEntityWithEmpty = Builder.set("name", "n").set("dtoKey3", "3").set("dtoKey4", "").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
     private static final Dto oneBasicEntity = Builder.set("name", "n").set("dtoKey1", "1").set("dtoKey2", "2").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
+    private static final Dto twoBasicEntityWithEmpty = Builder.set("name", "n").set("dtoKey1", "1").set("dtoKey2", "").set("prop1", "p1").set("prop2", "p2").set("createAt", Instant.now()).set("updateAt", Instant.now()).to(new Dto());
     private static final Dto noSuccessKeyEntity = Builder.set("name", "n").set("dtoKey5", "5").set("createAt", Instant.now()).set("updateAt", Instant.now()).set("id", "1").to(new Dto());
     private static final Dto noKeyEntity = Builder.set("name", "n").set("createAt", Instant.now()).set("updateAt", Instant.now()).set("id", "1").to(new Dto());
 
@@ -61,7 +63,9 @@ public class BaseDaoImplTest {
             Arguments.of(withEmptyGroupEntity, "delete from testServiceEntity where dtoKey7=#{dtoKey7} and dtoKey8=#{dtoKey8}"),
             Arguments.of(oneSingleEntity, "delete from testServiceEntity where dtoKey3=#{dtoKey3}"),
             Arguments.of(twoSingleEntity, "delete from testServiceEntity where dtoKey4=#{dtoKey4}"),
+            Arguments.of(twoSingleEntityWithEmpty, "delete from testServiceEntity where dtoKey3=#{dtoKey3}"),
             Arguments.of(oneBasicEntity, "delete from testServiceEntity where dtoKey1=#{dtoKey1} and dtoKey2=#{dtoKey2}")
+
         );
     }
     @ParameterizedTest
@@ -74,13 +78,14 @@ public class BaseDaoImplTest {
     private static Stream<Arguments> deleteByKeyFailParam() {
         return Stream.of(
             Arguments.of(noKeyEntity),
-            Arguments.of(noSuccessKeyEntity)
+            Arguments.of(noSuccessKeyEntity),
+            Arguments.of(twoBasicEntityWithEmpty)
         );
     }
     @ParameterizedTest
     @MethodSource("deleteByKeyFailParam")
     void deleteByKeyFail(final Dto e) {
-        Assertions.assertThrows(NullPointerException.class, () -> baseDaoImpl.deleteByKey(e));
+        Assertions.assertThrows(AssertionError.class, () -> baseDaoImpl.deleteByKey(e));
     }
 
     private static Stream<Arguments> updateParam() {
@@ -128,7 +133,7 @@ public class BaseDaoImplTest {
     @ParameterizedTest
     @MethodSource("updateByKeyFailParam")
     void updateByKeyFail(final Dto e) {
-        Assertions.assertThrows(NullPointerException.class, () -> baseDaoImpl.updateByKey(e));
+        Assertions.assertThrows(AssertionError.class, () -> baseDaoImpl.updateByKey(e));
     }
 
     private static Stream<Arguments> findByKeyParam() {
@@ -156,9 +161,11 @@ public class BaseDaoImplTest {
             Arguments.of(withEmptyGroupEntity, "select count(*) from testServiceEntity where ((dtoKey7=#{dtoKey7} and dtoKey8=#{dtoKey8}) or (dtoKey4=#{dtoKey4}) or (dtoKey3=#{dtoKey3}) or (dtoKey1=#{dtoKey1} and dtoKey2=#{dtoKey2}))"),
             Arguments.of(oneSingleEntity, "select count(*) from testServiceEntity where ((dtoKey3=#{dtoKey3}))"),
             Arguments.of(twoSingleEntity, "select count(*) from testServiceEntity where ((dtoKey4=#{dtoKey4}) or (dtoKey3=#{dtoKey3}))"),
+            Arguments.of(twoSingleEntityWithEmpty, "select count(*) from testServiceEntity where ((dtoKey3=#{dtoKey3}))"),
             Arguments.of(oneBasicEntity, "select count(*) from testServiceEntity where ((dtoKey1=#{dtoKey1} and dtoKey2=#{dtoKey2}))"),
             Arguments.of(noSuccessKeyEntity, "select 0"),
-            Arguments.of(noKeyEntity, "select 0")
+            Arguments.of(noKeyEntity, "select 0"),
+            Arguments.of(twoBasicEntityWithEmpty, "select 0")
         );
     }
     @ParameterizedTest
@@ -167,4 +174,5 @@ public class BaseDaoImplTest {
         String sql = baseDaoImpl.countByKeyCheckExist(e);
         Assertions.assertEquals(expectSql, sql);
     }
+
 }

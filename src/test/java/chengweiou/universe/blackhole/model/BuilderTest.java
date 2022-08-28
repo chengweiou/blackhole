@@ -95,7 +95,7 @@ public class BuilderTest {
 
     @Test
     public void setWrongName() {
-        Assertions.assertThrows(NullPointerException.class, () -> Builder.set("wrongname", 8).to(BuilderEntity.class));
+        Assertions.assertThrows(AssertionError.class, () -> Builder.set("wrongname", 8).to(BuilderEntity.class));
     }
 
     @Test

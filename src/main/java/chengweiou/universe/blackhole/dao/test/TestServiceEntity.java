@@ -56,20 +56,26 @@ public class TestServiceEntity extends ServiceEntity {
         private String name;
         @DtoKey
         private String dtoKey1;
-        @DtoKey
+        @DtoKey(canEmpty = true)
         private String dtoKey2;
         @DtoKey(single = true)
         private String dtoKey3;
-        @DtoKey(single = true)
+        @DtoKey(single = true, canEmpty = true)
         private String dtoKey4;
         @DtoKey(group = "1")
         private String dtoKey5;
-        @DtoKey(group = "1")
+        @DtoKey(group = "1", canEmpty = true)
         private String dtoKey6;
         @DtoKey(group = "2")
         private String dtoKey7;
         @DtoKey(group = "2")
         private String dtoKey8;
+        @DtoKey(group = "3")
+        private String dtoKey9;
+        @DtoKey(group = "3", canEmpty = true)
+        private String dtoKey10;
+        @DtoKey(group = "3", canEmpty = true)
+        private String dtoKey11;
         private String prop1;
         private String prop2;
 

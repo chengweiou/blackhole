@@ -37,7 +37,7 @@ public class BaseDaoImpl<T> {
                 .toList();
                 if (fail.get()) {
                     LogUtil.e("trying to insert (id=0) into " + getTable(e) + ". Please check code");
-                    throw new NullPointerException("trying to insert (id=0) into " + getTable(e) + ". Please check code");
+                    throw new AssertionError("trying to insert (id=0) into " + getTable(e) + ". Please check code");
                 }
         return "insert into " + getTable(e)
             + fieldNameList.stream().collect(Collectors.joining(", ", "(", ")"))
@@ -251,11 +251,11 @@ public class BaseDaoImpl<T> {
     /**
      * 获取其中一个有值的 dtoKey 组，如果有多个组，只获取第一个成功的。一个组已经能确认一个唯一用户
      * @param e
-     * @return 如果 没有成功获取 完整的一组，抛 nullpointer 异常
+     * @return 如果 没有成功获取 完整的一组，抛 assertionerror 异常
      */
     private List<String> getOneHasValueKeyList(T e) {
         Map<String, List<String>> successGroupMap = getAllHasValueKeyMap(e);
-        if (successGroupMap.isEmpty()) throw new NullPointerException("can not find a group of key field is NOT all null: " + getTable(e) + ". Please check code");
+        if (successGroupMap.isEmpty()) throw new AssertionError("can not find a group of key field is NOT all null: " + getTable(e) + ". Please check code");
         return successGroupMap.values().stream().findFirst().orElse(Collections.emptyList());
     }
 
@@ -263,15 +263,21 @@ public class BaseDaoImpl<T> {
      * 获取全部有值的 dtoKey 组, 一个 dtoKey 组的成员全部有值，才成功获取
      * @param e
      * @return 如果 没有成功获取 完整的一组，返回空集合
+     * 添加 的
      */
     private Map<String, List<String>> getAllHasValueKeyMap(T e) {
         List<DtoProp> dtoPropList = getKeyDtoPropList(e);
+        // 清理，如果这个组里有一个值是empty string，则排除这个组
+        List<String> hasEmptyGroupList = dtoPropList.stream().filter(dtoProp->dtoProp.getCanEmpty()&&"".equals(dtoProp.getV())).map(DtoProp::getGroup).distinct().toList();
+        dtoPropList = dtoPropList.stream().filter(dtoProp->!hasEmptyGroupList.contains(dtoProp.getGroup())).toList();
         Map<String, List<DtoProp>> groupMap = dtoPropList.stream().collect(Collectors.groupingBy(dtoProp -> dtoProp.getGroup()));
         List<String> successGroupList = groupMap.entrySet().stream()
-            .map(entrySet -> entrySet.getValue().stream().reduce(new DtoProp("", null, true), (a,b)-> new DtoProp(b.getGroup(), null, a.getV()!=null&&b.getV()!=null)))
+            .map(entrySet -> entrySet.getValue().stream().reduce(new DtoProp("", null, true, false), (a,b)-> new DtoProp(b.getGroup(), null, a.getV()!=null&&b.getV()!=null, false)))
             .filter(dtoProp->(Boolean)(dtoProp.getV())).map(dtoProp->dtoProp.getGroup()).toList();
         if (successGroupList.isEmpty()) return Map.of();
-        return successGroupList.stream().collect(Collectors.toMap(group->group, group->groupMap.get(group).stream().map(DtoProp::getField).toList()));
+        return successGroupList.stream().collect(Collectors.toMap(group->group, group->groupMap.get(group).stream()
+            .filter(dtoProp-> !dtoProp.getCanEmpty() || !dtoProp.getV().toString().isBlank())
+            .map(DtoProp::getField).toList()));
     }
 
     private List<DtoProp> getKeyDtoPropList(T e) {
@@ -282,8 +288,9 @@ public class BaseDaoImpl<T> {
         for (Field field : fieldList) {
             DtoKey dtoKey = field.getDeclaredAnnotation(DtoKey.class);
             String groupName = dtoKey.group();
+            if (groupName.startsWith(DtoProp.SINGLE_GROUP_PREV)) throw new AssertionError("Dto Key group name cannot start with: " + DtoProp.SINGLE_GROUP_PREV);
             if (dtoKey.single()) {
-                groupName = "noGroup" + singleCount;
+                groupName = DtoProp.SINGLE_GROUP_PREV + singleCount;
                 singleCount ++;
             }
             Object v = null;
@@ -292,7 +299,7 @@ public class BaseDaoImpl<T> {
                 v = field.get(e);
             } catch (IllegalArgumentException | IllegalAccessException ex) {
             }
-            result.add(new DtoProp(groupName, field.getName(), v));
+            result.add(new DtoProp(groupName, field.getName(), v, dtoKey.canEmpty()));
         }
         return result;
     }
