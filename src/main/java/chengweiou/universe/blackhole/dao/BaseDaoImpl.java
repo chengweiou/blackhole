@@ -17,8 +17,9 @@ import java.util.stream.Stream;
 import chengweiou.universe.blackhole.dao.model.DtoProp;
 import chengweiou.universe.blackhole.model.AbstractSearchCondition;
 import chengweiou.universe.blackhole.model.entity.DtoKey;
-import chengweiou.universe.blackhole.util.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class BaseDaoImpl<T> {
     public String save(T e) {
         AtomicBoolean fail = new AtomicBoolean();
@@ -36,7 +37,7 @@ public class BaseDaoImpl<T> {
                 .map(Field::getName)
                 .toList();
                 if (fail.get()) {
-                    LogUtil.e("trying to insert (id=0) into " + getTable(e) + ". Please check code");
+                    log.error("trying to insert (id=0) into " + getTable(e) + ". Please check code");
                     throw new AssertionError("trying to insert (id=0) into " + getTable(e) + ". Please check code");
                 }
         return "insert into " + getTable(e)
@@ -139,7 +140,7 @@ public class BaseDaoImpl<T> {
             Object id = method.invoke(e);
             if (id!=null) idWhere = " and id!=#{id}";
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-            LogUtil.i("entity " + e.getClass() + " 没有 id ");
+            log.info("entity " + e.getClass() + " 没有 id ");
         }
         Map<String, List<String>> successGroupMap = getAllHasValueKeyMap(e);
         if (successGroupMap.isEmpty()) return "select 0"; // todo 这里内部跑了异常
@@ -215,7 +216,7 @@ public class BaseDaoImpl<T> {
         if (searchCondition.getLimit() != 10) return false; // 被手动设置过limit，不需要
         if (where.toLowerCase().contains("id in ")) return false; // 有 in 查询，不需要
         if (!searchCondition.getSqlLimit().equals("")) return false; // 已有limit，不需要
-        LogUtil.i("(" + sql + ")\n"
+        log.info("(" + sql + ")\n"
             + "This sql is NOT include (sql in) sentense && not set limit.\n"
             + "Is searchCondition.idList!=null && dio does not use #{searchCondition.foreachIdList} ? \n"
             );
@@ -241,7 +242,7 @@ public class BaseDaoImpl<T> {
                     try {
                         return f.get(e) != null;
                     } catch (IllegalAccessException ex) {
-                        LogUtil.e("访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
+                        log.error("访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
                         return false;
                     }
                 })
@@ -314,7 +315,7 @@ public class BaseDaoImpl<T> {
                         f.setAccessible(true);
                         return f.get(e) != null;
                     } catch (IllegalAccessException ex) {
-                        LogUtil.e("sample 访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
+                        log.error("sample 访问" + e.getClass().getSimpleName() + "中属性："+f.getName(), ex);
                         return false;
                     }
                 })

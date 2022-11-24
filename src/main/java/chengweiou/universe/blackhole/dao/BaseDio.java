@@ -13,17 +13,17 @@ import java.util.stream.Collectors;
 
 import chengweiou.universe.blackhole.exception.FailException;
 import chengweiou.universe.blackhole.model.AbstractSearchCondition;
-import chengweiou.universe.blackhole.model.Builder;
 import chengweiou.universe.blackhole.model.entity.DtoEntity;
 import chengweiou.universe.blackhole.model.entity.DtoKey;
 import chengweiou.universe.blackhole.model.entity.ServiceEntity;
-import chengweiou.universe.blackhole.util.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * @DioCache(false) 类上方注解，用于禁止该 basedio 使用缓存
  * @DioDefaultSort("aaa") @DioDefaultSortAz(true) 属性上方注解，用于变更默认排序. 属性名随意 private boolean defaultSortAz;
  */
+@Slf4j
 public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     protected abstract <Dao extends AbstractBaseDao> Dao getDao();
     private Class<T> tClass;
@@ -59,9 +59,9 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
             tClass = (Class<T>) Class.forName(type.getTypeName());
             tNull = (T) tClass.getDeclaredField("NULL").get(tClass);
         } catch (ClassNotFoundException ex) {
-            LogUtil.e("can NOT general t class(" + type + ") in baseDio.", ex);
+            log.error("can NOT general t class(" + type + ") in baseDio.", ex);
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException ex) {
-            LogUtil.e("try to return T.NULL: " + tClass);
+            log.error("try to return T.NULL: " + tClass);
         }
     }
 
@@ -100,7 +100,7 @@ public abstract class BaseDio<T extends ServiceEntity, Dto extends DtoEntity> {
     public void deleteByIdList(List<String> idList) throws FailException {
         if (idList.isEmpty()) throw new FailException("idList is empty");
         long count = getDao().deleteByIdList((Dto) tNull.toDto(), idList);
-        if (count != idList.size()) LogUtil.i("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
+        if (count != idList.size()) log.info("delete multi total:" + idList.size() + " success: " + count + ". idList=" + idList);
         if (count == 0) throw new FailException();
         if (dioCache) BaseDioCache.delete(idList.stream().map(id -> createCacheK(id)).toList());
     }

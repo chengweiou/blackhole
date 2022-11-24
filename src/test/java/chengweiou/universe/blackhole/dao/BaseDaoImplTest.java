@@ -14,11 +14,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import chengweiou.universe.blackhole.dao.test.TestServiceEntity.Dto;
-import chengweiou.universe.blackhole.exception.FailException;
 import chengweiou.universe.blackhole.model.Builder;
 import chengweiou.universe.blackhole.model.test.BuilderEntity;
-
-
 
 public class BaseDaoImplTest {
     private BaseDaoImpl<Dto> baseDaoImpl = new BaseDaoImpl<>();

@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import chengweiou.universe.blackhole.util.DateUtil;
-import chengweiou.universe.blackhole.util.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Builder {
     /**
      * 1. create a new Entity with properties
@@ -67,7 +68,7 @@ public class Builder {
             try {
                 result = (T) c.getConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                LogUtil.e("builder set property fail! " + c + " needs a no param constructor", e);
+                log.error("builder set property fail! " + c + " needs a no param constructor", e);
                 throw new AssertionError("builder set property fail! \" + c + \" needs a no param constructor");
             }
             setProp(c, result);
@@ -97,7 +98,7 @@ public class Builder {
                 try {
                     methodMap.get(methodName).invoke(instance, e.getValue());
                 } catch (IllegalAccessException | InvocationTargetException ex) {
-                    LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
+                    log.error("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
                 } catch (IllegalArgumentException ex) {
                     try {
                         Object obj = switch (methodMap.get(methodName).getParameterTypes()[0].getName()) {
@@ -115,7 +116,7 @@ public class Builder {
                         };
                         methodMap.get(methodName).invoke(instance, obj);
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ParseException exception) {
-                        LogUtil.e("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
+                        log.error("builder set property fail! " + c + "." + methodName + "(" + e.getValue().toString() + ")");
                     }
                 }
             });
